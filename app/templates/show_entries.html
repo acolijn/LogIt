@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entries</title>
+</head>
+<body>
+
+<h1>Logbook Entries</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Text</th>
+            <th>Keywords</th>
+            <th>Image</th>
+            <th>User</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in entries %}
+            <tr>
+                <td>{{ entry.text }}</td>
+                <td>
+                    <ul>
+                        {% for keyword in entry.keywords %}
+                            <li>{{ keyword }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    {% if entry.image %}
+                        <img src="{{ url_for('static', filename='upload/' + entry.image) }}" alt="Uploaded Image" width="100">
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>
+                <td>{{ entry.user }}</td>
+                <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
+
+

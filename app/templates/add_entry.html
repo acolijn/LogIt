@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Logbook Entry</title>
+</head>
+<body>
+    <h2>Add Logbook Entry</h2>
+    <form action="/add-entry" method="post" enctype="multipart/form-data">
+        <label for="text">Entry Text:</label><br>
+        <textarea name="text" id="text" rows="4" required></textarea><br><br>
+
+        <label for="image">Upload Image:</label><br>
+        <input type="file" id="image" name="image"><br><br>
+
+        <label for="keywords">Keywords (comma-separated):</label><br>
+        <input type="text" id="keywords" name="keywords"><br><br>
+
+        <input type="submit" value="Add Entry">
+    </form>
+</body>
+</html>
