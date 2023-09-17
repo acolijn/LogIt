@@ -5,7 +5,7 @@ mongo = PyMongo()
 
 def create_app(config_filename):
     print("create_app")
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='static')
     app.config.from_object(config_filename)
 
     print("config_filename: ", config_filename)
