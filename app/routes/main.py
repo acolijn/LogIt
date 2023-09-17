@@ -61,3 +61,14 @@ def test_mongo():
     print(current_app.config['MONGO_URI'])
     print("MongoDB:", mongo.db)
     return "Check the logs!"
+
+
+@main.route('/test_image')
+def test_image():
+    return current_app.send_static_file('upload/IMG_9404.JPG')
+
+from flask import send_from_directory
+
+@main.route('/direct_image')
+def direct_image():
+    return send_from_directory('static/upload/', 'IMG_9404.JPG')
