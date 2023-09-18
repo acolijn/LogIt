@@ -8,6 +8,7 @@ def create_app(config_filename):
     app = Flask(__name__, static_folder='static')
     app.config.from_object(config_filename)
 
+    print(app.static_folder)
     print("config_filename: ", config_filename)
     print("app.config: ", app.config)
 

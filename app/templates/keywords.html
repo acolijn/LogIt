@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">Keyword Management</h1>
+
+<div class="container mt-5">
+    <h2>Select a Keyword</h2>
+    <select class="custom-select" id="keyword-select">
+        {% for keyword in keywords %}
+        <option>{{ keyword }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Add keyword -->
+    <div class="mt-3">
+        <h2>Add Keyword</h2>
+        <input type="text" id="new-keyword" placeholder="Enter new keyword">
+        <button onclick="addKeyword()">Add</button>
+    </div>
+
+    <!-- Remove keyword -->
+    <div class="mt-3">
+        <h2>Remove Selected Keyword</h2>
+        <button onclick="removeKeyword()">Remove</button>
+    </div>
+</div>
+
+<script>
+    function addKeyword() {
+        const keyword = document.getElementById("new-keyword").value;
+        fetch("/add-keyword", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "keyword=" + keyword
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            });
+    }
+
+    function removeKeyword() {
+        const keyword = document.getElementById("keyword-select").value;
+        fetch("/remove-keyword", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "keyword=" + keyword
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            });
+    }
+</script>
+
+</body>
+</html>
+
+{% endblock %}

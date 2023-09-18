@@ -1,24 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Logbook Entry</title>
-</head>
+{% extends "base.html" %}
+
+{% block content %}
+
 <body>
-    <h2>Add Logbook Entry</h2>
-    <form action="/add-entry" method="post" enctype="multipart/form-data">
-        <label for="text">Entry Text:</label><br>
-        <textarea name="text" id="text" rows="4" required></textarea><br><br>
+    <div class="container mt-5">
+        <h2 class="mb-4">Add Logbook Entry</h2>
+        <form action="/add-entry" method="post" enctype="multipart/form-data">
 
-        <label for="image">Upload Image:</label><br>
-        <input type="file" id="image" name="image"><br><br>
+            <!-- Start of row -->
+            <div class="form-row">
+                <!-- Entry Text Column -->
+                <div class="form-group col-md-8">
+                    <label for="text">Entry Text:</label>
+                    <textarea class="form-control" name="text" id="text" rows="4" required></textarea>
+                </div>
 
-        <label for="keywords">Keywords (comma-separated):</label><br>
-        <input type="text" id="keywords" name="keywords"><br><br>
+                <!-- Keyword Selection Column -->
+                <div class="form-group col-md-4 mb-0">
+                    <label for="keywordSelect">Keywords:</label>
+                    <select multiple class="form-control" id="keywordSelect" name="keywordSelect[]">
+                        <option value="None" selected>None</option>
+                        <!-- Other options will be added dynamically by JavaScript -->
+                    </select>
+<!--                     <small class="form-text text-muted style=margin-bottom: 0;">Hold down the Ctrl (windows) / Command (Mac) button to select
+                        multiple options.</small>  -->
+                </div>
+            </div> <!-- End of row -->
 
-        <input type="submit" value="Add Entry">
-    </form>
+            <div class="form-group mt-0">
+                <label for="image">Upload Image:</label> 
+                <input type="file" class="form-control-file" id="image" name="image">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Entry</button>
+        </form>
+
+
+        <script>
+            $(document).ready(function () {
+                $.getJSON("/get-keywords", function (data) {
+                    var keywordDropdown = $("#keywordSelect");
+                    keywordDropdown.empty();  // Clear existing options
+                    keywordDropdown.append($('<option>', { value: "None", text: "None", selected: true }));  // Add the default None option
+                    $.each(data.keywords, function (key, value) {
+                        keywordDropdown.append($('<option>', { value: value, text: value }));
+                    });
+                });
+            });
+        </script>
+
+    </div>
+
 </body>
-</html>
+
+{% endblock %}
