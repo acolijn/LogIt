@@ -16,7 +16,7 @@ def allowed_file(filename):
 @main.route('/add-entry', methods=['GET'])
 def add_entry_form():
     """Show the add entry form.
-    
+
     Returns: 
         HTML page -- The add entry form.
 
