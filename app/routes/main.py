@@ -6,8 +6,6 @@ from app import mongo
 
 main = Blueprint('main', __name__)
 
-# ... (Other routes and functionalities for the main blueprint) ...
-
 # Your file upload and logbook entry handling goes here:
 UPLOAD_FOLDER = 'app/static/upload/' 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -69,6 +67,12 @@ from math import ceil
 
 @main.route('/entries')
 def show_entries():
+    """Show the list of entries.
+
+    Returns:
+        HTML page -- The entries page.
+
+    """
 
     search_term = request.args.get('search_term', '')
     keyword_filter = request.args.get('keyword_filter', None)
@@ -103,6 +107,12 @@ def show_entries():
 
 @main.route('/test-mongo')
 def test_mongo():
+    """Test the connection to MongoDB.
+
+    Returns:
+        str: Success or failure message.
+
+    """
     print(current_app.config['MONGO_URI'])
     print("MongoDB:", mongo.db)
     return "Check the logs!"
@@ -149,6 +159,12 @@ def remove_keyword():
 
 @main.route('/keywords')
 def show_keywords():
+    """Show the list of allowed keywords.
+
+    Returns:
+        HTML page -- The keywords page.
+
+    """
     keyword_data = mongo.db.allowed_keywords.find_one()
     if not keyword_data:
         # If no keyword data exists, initialize it with an empty list
@@ -160,6 +176,12 @@ def show_keywords():
 
 @main.route('/get-keywords')
 def get_keywords():
+    """Get the list of allowed keywords.
+
+    Returns:
+        JSON -- The list of allowed keywords.
+
+    """ 
     keyword_data = mongo.db.allowed_keywords.find_one()
     if not keyword_data:
         return jsonify(keywords=[])
