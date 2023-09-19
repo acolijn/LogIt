@@ -17,7 +17,7 @@ def allowed_file(filename):
 def add_entry_form():
     """Show the add entry form.
     
-    Returns:
+    Returns: 
         HTML page -- The add entry form.
 
     """	
