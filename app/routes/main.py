@@ -3,6 +3,8 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 from app import mongo
+from flask_login import login_required, current_user
+
 
 main = Blueprint('main', __name__)
 
@@ -14,6 +16,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @main.route('/add-entry', methods=['GET'])
+@login_required
 def add_entry_form():
     """Show the add entry form.
 
@@ -25,6 +28,7 @@ def add_entry_form():
     return render_template('add_entry.html')
 
 @main.route('/add-entry', methods=['POST'])
+@login_required
 def handle_entry():
     """Handle the add entry form.
 
@@ -54,7 +58,7 @@ def handle_entry():
         "text": text,
         "keywords": keywords,
         "image": image_filename,   # store the path or filename to the uploaded image
-        "user": "UsernameHere"   # this should come from your user management system
+        "user": current_user.username   # this should come from your user management system
     }
 
     mongo.db.entries.insert_one(entry)
@@ -66,6 +70,7 @@ def handle_entry():
 from math import ceil
 
 @main.route('/entries')
+@login_required
 def show_entries():
     """Show the list of entries.
 
@@ -73,7 +78,8 @@ def show_entries():
         HTML page -- The entries page.
 
     """
-
+    print(current_user.username)
+    print(current_user.is_authenticated)
     search_term = request.args.get('search_term', '')
     keyword_filter = request.args.get('keyword_filter', None)
 
@@ -106,6 +112,7 @@ def show_entries():
     return render_template('show_entries.html', entries=entries, page_number=page_number, total_pages=total_pages)
 
 @main.route('/test-mongo')
+@login_required
 def test_mongo():
     """Test the connection to MongoDB.
 
@@ -118,6 +125,7 @@ def test_mongo():
     return "Check the logs!"
 
 @main.route('/add-keyword', methods=['POST'])
+@login_required
 def add_keyword():
     """Add a new keyword to the allowed list in MongoDB.
 
@@ -138,6 +146,7 @@ def add_keyword():
         return f"Keyword '{keyword}' already exists or there was an error!", 400
 
 @main.route('/remove-keyword', methods=['POST'])
+@login_required
 def remove_keyword():
     """Remove a keyword from the allowed list in MongoDB.
 
@@ -158,6 +167,7 @@ def remove_keyword():
         return f"Keyword '{keyword}' doesn't exist or there was an error!", 400
 
 @main.route('/keywords')
+@login_required
 def show_keywords():
     """Show the list of allowed keywords.
 
@@ -175,6 +185,7 @@ def show_keywords():
     return render_template('keywords.html', keywords=keywords)
 
 @main.route('/get-keywords')
+@login_required
 def get_keywords():
     """Get the list of allowed keywords.
 

@@ -1,0 +1,30 @@
+<form method="get" action="/entries" , class="mb-4 mt-5">    
+    <div class="form-row">
+        <div class="col">
+            <input type="text" name="search_term" class="form-control" placeholder="Search Entries">
+        </div>
+        <div class="col">
+            <select name="keyword_filter" class="form-control" id="keywordDropdown">
+                <option value="" selected>None</option>
+                <!-- Keywords options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.getJSON("/get-keywords", function (data) {
+            var keywordDropdown = $("#keywordDropdown");
+
+            $.each(data.keywords, function (index, keyword) {
+                keywordDropdown.append($('<option>', { value: keyword, text: keyword }));
+            });
+        });
+    });
+</script>

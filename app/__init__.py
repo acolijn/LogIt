@@ -1,7 +1,10 @@
 from flask import Flask
 from flask_pymongo import PyMongo
+from flask_login import LoginManager
 
 mongo = PyMongo()
+
+login_manager = LoginManager()
 
 def create_app(config_filename):
     print("create_app")
@@ -21,5 +24,8 @@ def create_app(config_filename):
     
     from .routes.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
+
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
 
     return app

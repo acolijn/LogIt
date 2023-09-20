@@ -1,56 +1,44 @@
-{% extends "base.html" %}
+<h2 class="mb-4">Add Logbook Entry</h2>
+<form action="/add-entry" method="post" enctype="multipart/form-data">
 
-{% block content %}
+    <!-- Start of row -->
+    <div class="form-row">
+        <!-- Entry Text Column -->
+        <div class="form-group col-md-8">
+            <label for="text">Entry Text:</label>
+            <textarea class="form-control" name="text" id="text" rows="4" required></textarea>
+        </div>
 
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Add Logbook Entry</h2>
-        <form action="/add-entry" method="post" enctype="multipart/form-data">
-
-            <!-- Start of row -->
-            <div class="form-row">
-                <!-- Entry Text Column -->
-                <div class="form-group col-md-8">
-                    <label for="text">Entry Text:</label>
-                    <textarea class="form-control" name="text" id="text" rows="4" required></textarea>
-                </div>
-
-                <!-- Keyword Selection Column -->
-                <div class="form-group col-md-4 mb-0">
-                    <label for="keywordSelect">Keywords:</label>
-                    <select multiple class="form-control" id="keywordSelect" name="keywordSelect[]">
-                        <option value="None" selected>None</option>
-                        <!-- Other options will be added dynamically by JavaScript -->
-                    </select>
-<!--                     <small class="form-text text-muted style=margin-bottom: 0;">Hold down the Ctrl (windows) / Command (Mac) button to select
+        <!-- Keyword Selection Column -->
+        <div class="form-group col-md-4 mb-0">
+            <label for="keywordSelect">Keywords:</label>
+            <select multiple class="form-control" id="keywordSelect" name="keywordSelect[]">
+                <option value="None" selected>None</option>
+                <!-- Other options will be added dynamically by JavaScript -->
+            </select>
+            <!--                     <small class="form-text text-muted style=margin-bottom: 0;">Hold down the Ctrl (windows) / Command (Mac) button to select
                         multiple options.</small>  -->
-                </div>
-            </div> <!-- End of row -->
+        </div>
+    </div> <!-- End of row -->
 
-            <div class="form-group mt-0">
-                <label for="image">Upload Image:</label> 
-                <input type="file" class="form-control-file" id="image" name="image">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Add Entry</button>
-        </form>
-
-
-        <script>
-            $(document).ready(function () {
-                $.getJSON("/get-keywords", function (data) {
-                    var keywordDropdown = $("#keywordSelect");
-                    keywordDropdown.empty();  // Clear existing options
-                    keywordDropdown.append($('<option>', { value: "None", text: "None", selected: true }));  // Add the default None option
-                    $.each(data.keywords, function (key, value) {
-                        keywordDropdown.append($('<option>', { value: value, text: value }));
-                    });
-                });
-            });
-        </script>
-
+    <div class="form-group mt-0">
+        <label for="image">Upload Image:</label>
+        <input type="file" class="form-control-file" id="image" name="image">
     </div>
 
-</body>
+    <button type="submit" class="btn btn-primary">Add Entry</button>
+</form>
 
-{% endblock %}
+
+<script>
+    $(document).ready(function () {
+        $.getJSON("/get-keywords", function (data) {
+            var keywordDropdown = $("#keywordSelect");
+            keywordDropdown.empty();  // Clear existing options
+            keywordDropdown.append($('<option>', { value: "None", text: "None", selected: true }));  // Add the default None option
+            $.each(data.keywords, function (key, value) {
+                keywordDropdown.append($('<option>', { value: value, text: value }));
+            });
+        });
+    });
+</script>
