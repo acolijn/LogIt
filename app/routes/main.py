@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify
-from werkzeug.utils import secure_filename
-from datetime import datetime
 import os
-from app import mongo
+
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
+
+from datetime import datetime
+import pytz
+
+from app import mongo
 
 
 main = Blueprint('main', __name__)
@@ -103,7 +107,14 @@ def show_entries():
     skip_entries = (page_number - 1) * per_page
     
     # Retrieve the paginated entries from the database
-    entries = mongo.db.entries.find(query).sort("timestamp", -1).skip(skip_entries).limit(per_page)
+    entries_cursor = mongo.db.entries.find(query).sort("timestamp", -1).skip(skip_entries).limit(per_page)
+    
+    # Convert UTC timestamp to Amsterdam local time
+    amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+    entries = []
+    for entry in entries_cursor:
+        entry['timestamp'] = entry['timestamp'].replace(tzinfo=pytz.utc).astimezone(amsterdam_tz)
+        entries.append(entry)
 
     # Calculate the total number of pages
     total_entries = mongo.db.entries.count_documents({})
