@@ -71,4 +71,4 @@ def users():
 
 @auth.route('/')
 def index():
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.show_entries'))
