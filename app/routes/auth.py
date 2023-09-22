@@ -68,3 +68,7 @@ def users():
 
     users = User.get_all()
     return users
+
+@auth.route('/')
+def index():
+    return redirect(url_for('auth.login'))
