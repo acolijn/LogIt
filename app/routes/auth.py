@@ -57,3 +57,14 @@ def register():
     return render_template('register.html', form=form)
 
 
+# I need a function to get alist o users. no render_template needed
+@auth.route('/users')
+@login_required
+def users():
+    # Ensure only admin can access
+    if not current_user.is_admin:
+        flash('Access denied!', 'danger')
+        return redirect(url_for('main.show_entries'))
+
+    users = User.get_all()
+    return users
