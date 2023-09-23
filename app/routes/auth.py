@@ -21,7 +21,6 @@ def login():
         user = User.find_by_username(username)
         if user and user.check_password(password):
             login_user(user)  # This is the important part
-            flash('Logged in successfully!')
             return redirect(url_for('main.show_entries'))
         else:
             flash('Invalid username or password', 'danger')
