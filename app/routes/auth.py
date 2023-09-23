@@ -10,6 +10,9 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """For GET requests, display the login form.
+    For POSTS, login the current user by processing the form.
+    """
     print("login")
     if request.method == 'POST':
         username = request.form.get('username')
@@ -23,16 +26,17 @@ def login():
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login.html')
-#    return "Login Route"
 
 @auth.route('/logout')
 @login_required
 def logout():
+    """Logout the current user."""	
     logout_user()
     return redirect(url_for('auth.login'))
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Check if user is logged-in on every page load."""	
     user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if user_data:
         user_data['password'] = user_data.pop('password', None)  # Rename the key
@@ -42,6 +46,7 @@ def load_user(user_id):
 @auth.route('/register', methods=['GET', 'POST'])
 @login_required
 def register():
+    """Register a new user."""	
     # Ensure only admin can access
     if not current_user.is_admin:
         flash('Access denied!', 'danger')
@@ -56,11 +61,10 @@ def register():
         return redirect(url_for('main.show_entries'))
     return render_template('register.html', form=form)
 
-
-# I need a function to get alist o users. no render_template needed
 @auth.route('/users')
 @login_required
 def users():
+    """Get all users."""
     # Ensure only admin can access
     if not current_user.is_admin:
         flash('Access denied!', 'danger')
@@ -71,4 +75,5 @@ def users():
 
 @auth.route('/')
 def index():
+    """Redirect to login page."""	
     return redirect(url_for('main.show_entries'))

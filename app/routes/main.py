@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, curren
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 from app import mongo
@@ -77,14 +77,31 @@ from math import ceil
 @main.route('/entries')
 @login_required
 def show_entries():
+    """Show the logbook entries.
+
+    Returns:
+        HTML page -- The logbook entries page.
+
+    """
+
+    # Extract query parameters
     search_term = request.args.get('search_term', '')
     keyword_filter = request.args.get('keyword_filter', None)
+    start_date_str = request.args.get('start_date', None)
+    end_date_str = request.args.get('end_date', None)
 
     query = {}
+    
     if search_term:
         query["text"] = {"$regex": search_term, "$options": "i"}
+        
     if keyword_filter:
         query["keywords"] = keyword_filter
+    
+    if start_date_str and end_date_str:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)  # Adding 1 day to include the end date
+        query["timestamp"] = {"$gte": start_date, "$lte": end_date}
 
     per_page = 5
     page_number = int(request.args.get('page', 1))

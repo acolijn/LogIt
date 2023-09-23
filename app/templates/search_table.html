@@ -10,6 +10,19 @@
                 <!-- Keywords options will be populated dynamically -->
             </select>
         </div>
+
+        <!-- New Start Date input -->
+        <div class="col">
+            <input type="date" name="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}"
+                placeholder="Start Date">  
+            </div>
+
+        <!-- New End Date input -->
+        <div class="col">
+            <input type="date" name="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}"
+                placeholder="End Date">
+        </div>
+
         <div class="col">
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
