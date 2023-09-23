@@ -1,11 +1,13 @@
 <form method="get" action="/entries" , class="mb-4 mt-5">
-    <div class="form-row">
+    <div class="form-row align-items-end">
         <div class="col">
-            <input type="text" name="search_term" class="form-control" placeholder="Search Entries"
+            <label for="search-term">Text search:</label>
+            <input type="text" id="search-term" name="search_term" class="form-control" placeholder="Search Entries"
                 value="{{ search_term|default('', true) }}">
         </div>
         <div class="col">
-            <select name="keyword_filter" class="form-control" id="keywordDropdown">
+            <label for="keyword-filter">Keyword:</label>
+            <select name="keyword_filter" id="keyword-filter" class="form-control" id="keywordDropdown">
                 <option value="" selected>None</option>
                 <!-- Keywords options will be populated dynamically -->
             </select>
@@ -13,18 +15,20 @@
 
         <!-- New Start Date input -->
         <div class="col">
-            <input type="date" name="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}"
+            <label for="start-date">From:</label>
+            <input type="date" id="start-date" name="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}"
                 placeholder="Start Date">  
             </div>
 
         <!-- New End Date input -->
         <div class="col">
-            <input type="date" name="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}"
+            <label for="end-date">To:</label>
+            <input type="date" id="end-date" name="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}"
                 placeholder="End Date">
         </div>
 
         <div class="col">
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" id="order-by" class="btn btn-primary" style="vertical-align: bottom;">Search</button>
         </div>
     </div>
 </form>

@@ -70,9 +70,7 @@ def handle_entry():
     # return redirect(url_for('main.add_entry_form'))
     return redirect(url_for('main.show_entries'))
 
-
 from math import ceil
-
 
 @main.route('/entries')
 @login_required
