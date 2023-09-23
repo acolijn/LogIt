@@ -1,7 +1,8 @@
-<form method="get" action="/entries" , class="mb-4 mt-5">    
+<form method="get" action="/entries" , class="mb-4 mt-5">
     <div class="form-row">
         <div class="col">
-            <input type="text" name="search_term" class="form-control" placeholder="Search Entries">
+            <input type="text" name="search_term" class="form-control" placeholder="Search Entries"
+                value="{{ search_term|default('', true) }}">
         </div>
         <div class="col">
             <select name="keyword_filter" class="form-control" id="keywordDropdown">
@@ -15,15 +16,21 @@
     </div>
 </form>
 
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script>
     $(document).ready(function () {
+        var currentKeyword = "{{ keyword_filter|default('', true) }}"; // Get the current keyword from Flask
         $.getJSON("/get-keywords", function (data) {
             var keywordDropdown = $("#keywordDropdown");
 
             $.each(data.keywords, function (index, keyword) {
-                keywordDropdown.append($('<option>', { value: keyword, text: keyword }));
+                var option = $('<option>', { value: keyword, text: keyword });
+                if (currentKeyword === keyword) {
+                    option.attr('selected', 'selected');
+                }
+                keywordDropdown.append(option);
             });
         });
     });

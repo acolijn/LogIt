@@ -73,40 +73,24 @@ def handle_entry():
 
 from math import ceil
 
+
 @main.route('/entries')
 @login_required
 def show_entries():
-    """Show the list of entries.
-
-    Returns:
-        HTML page -- The entries page.
-
-    """
-    print(current_user.username)
-    print(current_user.is_authenticated)
     search_term = request.args.get('search_term', '')
     keyword_filter = request.args.get('keyword_filter', None)
 
     query = {}
     if search_term:
-        query["text"] = {"$regex": search_term, "$options": "i"}  # Case-insensitive search in text
+        query["text"] = {"$regex": search_term, "$options": "i"}
     if keyword_filter:
         query["keywords"] = keyword_filter
 
-    # Adjust your MongoDB find command
-    #entries = mongo.db.entries.find(query).sort("timestamp", -1).skip(skip_entries).limit(per_page)
-
-
-    # Retrieve all entries from MongoDB
-    print('static folder = ', current_app.static_folder)
-
     per_page = 5
-    page_number = int(request.args.get('page', 1))  # get the page number from the request, default is 1
+    page_number = int(request.args.get('page', 1))
 
-    # Calculate the number of entries to skip
     skip_entries = (page_number - 1) * per_page
-    
-    # Retrieve the paginated entries from the database
+
     entries_cursor = mongo.db.entries.find(query).sort("timestamp", -1).skip(skip_entries).limit(per_page)
     
     # Convert UTC timestamp to Amsterdam local time
@@ -116,11 +100,16 @@ def show_entries():
         entry['timestamp'] = entry['timestamp'].replace(tzinfo=pytz.utc).astimezone(amsterdam_tz)
         entries.append(entry)
 
-    # Calculate the total number of pages
-    total_entries = mongo.db.entries.count_documents({})
+    # Calculate the total number of entries matching the query
+    if query:
+        total_entries = mongo.db.entries.count_documents(query)
+    else:
+        total_entries = mongo.db.entries.count_documents({})
     total_pages = ceil(total_entries / per_page)
 
-    return render_template('show_entries.html', entries=entries, page_number=page_number, total_pages=total_pages)
+    return render_template('show_entries.html', entries=entries, 
+                           page_number=page_number, total_pages=total_pages, 
+                           search_term=search_term, keyword_filter=keyword_filter)
 
 @main.route('/test-mongo')
 @login_required
