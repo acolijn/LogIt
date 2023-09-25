@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="container mt-2">
+<div class="container mt-2"  style="max-width: 75%;">
 
 <h1 class="mb-4">Logbook Entries</h1>
     {% include 'search_table.html' %}
@@ -15,11 +15,11 @@
         <!-- End of Add Logbook Entry Form Row -->
     <thead class="thead-dark">
         <tr>
-            <th>Timestamp</th>
-            <th>Entry</th>
-            <th>Keywords</th>
-            <th>Image</th>
-            <th>User</th>
+            <th style="width:10%;">Timestamp</th>
+            <th style="width:60%;">Entry</th>
+            <th style="width:10%;">Keywords</th>
+            <th style="width:10%;">Image</th>
+            <th style="width:10%;">User</th>
         </tr>
     </thead>
         <!-- Existing log entries -->
