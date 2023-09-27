@@ -8,11 +8,13 @@
 
     <!-- Add keyword -->
     <h3>Add keyword</h3>
-    <form method="post" action="/add-keyword" class="mb-4 mt-2">
+    <!-- <form method="post" action="/add-keyword" class="mb-4 mt-2">-->
+    <form method="post" onsubmit="event.preventDefault(); addKeyword();" class="mb-4 mt-2">
+
         <div class="form-row align-items-center">
             <div class="col-auto">
                 <label for="new-keyword" class="sr-only">New Keyword</label>
-                <input type="text" id="new-keyword" name="new_keyword" class="form-control" style="width: 200px;"
+                <input type="text" id="new-keyword" name="keyword" class="form-control" style="width: 200px;"
                     placeholder="Enter new keyword">
             </div>
             <div class="col-auto">
