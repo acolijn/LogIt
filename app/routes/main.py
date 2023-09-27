@@ -44,7 +44,7 @@ def handle_entry():
 
     print("handle_entry")
     text = request.form['text']
-    keywords = request.form.getlist('keywordSelect')
+    keywords = request.form.getlist('keywordSelect[]')
 
     # Handle image upload
     print('static folder = ', current_app.static_folder )   
