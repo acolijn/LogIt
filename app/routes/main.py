@@ -199,7 +199,9 @@ def show_keywords():
         keywords = keyword_data.get('keywords', [])
 
     # Sort the keywords alphabetically
-    keywords = sorted(keywords)
+    #keywords = sorted(keywords)
+    keywords = sorted(keywords, key=lambda s: s.lower())
+
     # Render the keywords page
     return render_template('keywords.html', keywords=keywords)
 
