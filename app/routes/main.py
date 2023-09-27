@@ -197,6 +197,10 @@ def show_keywords():
         keywords = []
     else:
         keywords = keyword_data.get('keywords', [])
+
+    # Sort the keywords alphabetically
+    keywords = sorted(keywords)
+    # Render the keywords page
     return render_template('keywords.html', keywords=keywords)
 
 @main.route('/get-keywords')
@@ -212,6 +216,5 @@ def get_keywords():
     if not keyword_data:
         return jsonify(keywords=[])
     else:
-        print(keyword_data)
-        return jsonify(keywords=keyword_data.get('keywords', []))
+        return jsonify(keywords=sorted(keyword_data.get('keywords', [])))
 
