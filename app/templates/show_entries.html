@@ -37,10 +37,23 @@
             </td>
             <td>
                 {% if entry.image %}
-                <a href="{{ url_for('static', filename='upload/' + entry.image) }}" data-fancybox="image-set">
+                <!-- <a href="{{ url_for('static', filename='upload/' + entry.image) }}" data-fancybox="image-set">
                     <img src="{{ url_for('static', filename='upload/' + entry.image) }}" alt="Uploaded Image"
                         class="img-thumbnail" width="100">
-                </a>
+                </a> -->
+                    {% if entry.image.endswith('.pdf') %}
+                    <a href="{{ url_for('static', filename='upload/' + entry.image) }}" target="_blank">
+                        <!-- Display PDF icon or thumbnail -->
+                        <img src="{{ url_for('static', filename='icons/pdf_icon.png') }}" alt="PDF Document" class="img-thumbnail"
+                            width="50">
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('static', filename='upload/' + entry.image) }}" data-fancybox="image-set">
+                        <!-- Display image thumbnail -->
+                        <img src="{{ url_for('static', filename='upload/' + entry.image) }}" alt="Uploaded Image" class="img-thumbnail"
+                            width="100">
+                    </a>
+                    {% endif %}
                 {% else %}
                 No Image
                 {% endif %}

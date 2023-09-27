@@ -44,17 +44,32 @@ def handle_entry():
 
     print("handle_entry")
     text = request.form['text']
-    keywords = request.form.getlist('keywordSelect[]')
+    keywords = request.form.getlist('keywordSelect')
 
     # Handle image upload
     print('static folder = ', current_app.static_folder )   
     image_filename = None
+    # if 'image' in request.files:
+    #     image = request.files['image']
+    #     if image.filename != '' and allowed_file(image.filename):
+    #         filename = secure_filename(image.filename)
+    #         image.save(os.path.join(UPLOAD_FOLDER, filename))
+    #         image_filename = filename
+
     if 'image' in request.files:
         image = request.files['image']
-        if image.filename != '' and allowed_file(image.filename):
+        if image and allowed_file(image.filename):  # Check if image object is not None
             filename = secure_filename(image.filename)
-            image.save(os.path.join(UPLOAD_FOLDER, filename))
+            full_path = os.path.join(UPLOAD_FOLDER, filename)
+            print(f"Saving to {full_path}")  # Debug: print the full path where the image will be saved
+            try:
+                image.save(full_path)
+            except Exception as e:
+                print(f"Error saving image: {e}")  # Debug: print any exception raised during saving
             image_filename = filename
+        else:
+            print("Image is not allowed or no image received")  # Debug: print if the image is not allowed or no image received
+
     
     # Store the data in MongoDB
     entry = {
