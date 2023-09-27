@@ -42,6 +42,7 @@
 
 <script>
     $(document).ready(function () {
+        console.log("doing get keywords");
         $.getJSON("/get-keywords", function (data) {
             var keywordDropdown = $("#keywordSelect");
             keywordDropdown.empty();  // Clear existing options
