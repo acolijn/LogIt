@@ -15,7 +15,6 @@ main = Blueprint('main', __name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # This gets the directory where the current file is located
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'upload')  # This creates the path to your upload folder
 
-main.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Your file upload and logbook entry handling goes here:
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
