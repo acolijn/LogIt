@@ -13,7 +13,7 @@ def login():
     """For GET requests, display the login form.
     For POSTS, login the current user by processing the form.
     """
-    print("login")
+    print("login ..... ")
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
