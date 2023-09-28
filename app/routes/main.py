@@ -12,9 +12,9 @@ from app import mongo
 
 main = Blueprint('main', __name__)
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # This gets the directory where the current file is located
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'upload')  # This creates the path to your upload folder
-
+script_location = os.path.abspath(__file__)  # Get the absolute location of the current script.
+project_home = os.path.dirname(script_location)  # Get the directory containing the script, i.e., project home.
+UPLOAD_FOLDER = os.path.join(project_home, 'static', 'upload')  # Create the path to the upload folder.
 # Your file upload and logbook entry handling goes here:
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
