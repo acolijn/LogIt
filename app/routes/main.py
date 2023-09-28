@@ -14,7 +14,8 @@ main = Blueprint('main', __name__)
 
 script_location = os.path.abspath(__file__)  # Get the absolute location of the current script.
 project_home = os.path.dirname(script_location)  # Get the directory containing the script, i.e., project home.
-UPLOAD_FOLDER = os.path.join(project_home, 'static', 'upload')  # Create the path to the upload folder.
+UPLOAD_FOLDER = os.path.join(project_home, '../', 'static', 'upload')  # Create the path to the upload folder.
+print(f"Upload folder: {UPLOAD_FOLDER}")  # Debug: print the upload folder path
 # Your file upload and logbook entry handling goes here:
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
