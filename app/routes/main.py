@@ -5,10 +5,10 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from datetime import datetime, timedelta
+from collections import defaultdict
 import pytz
 
 from app import mongo
-
 
 main = Blueprint('main', __name__)
 
@@ -34,6 +34,34 @@ def add_entry_form():
     print("add_entry_form")
     return render_template('add_entry.html')
 
+@main.route('/dbactivity.html')
+@login_required
+def db_activity():
+    return render_template('dbactivity.html')
+
+@main.route('/timeline')
+@login_required
+def timeline():
+    """Get the timeline data.
+    
+    Returns:
+        JSON -- The timeline data.
+
+    """
+    entries = mongo.db.entries.find()
+    
+    data = defaultdict(int)
+    for entry in entries:
+        timestamp = entry['timestamp']
+        date = timestamp.date()
+        data[date] += 1
+    
+    dates = sorted(data.keys())
+    counts = [data[date] for date in dates]
+    
+    return jsonify(dates=dates, counts=counts)
+
+
 @main.route('/add-entry', methods=['POST'])
 @login_required
 def handle_entry():
@@ -52,12 +80,6 @@ def handle_entry():
     # Handle image upload
     print('static folder = ', current_app.static_folder )   
     image_filename = None
-    # if 'image' in request.files:
-    #     image = request.files['image']
-    #     if image.filename != '' and allowed_file(image.filename):
-    #         filename = secure_filename(image.filename)
-    #         image.save(os.path.join(UPLOAD_FOLDER, filename))
-    #         image_filename = filename
 
     if 'image' in request.files:
         image = request.files['image']
@@ -83,6 +105,7 @@ def handle_entry():
         "user": current_user.username   # this should come from your user management system
     }
 
+    # Insert the entry into the database
     mongo.db.entries.insert_one(entry)
     
     # return redirect(url_for('main.add_entry_form'))
@@ -237,4 +260,61 @@ def get_keywords():
         return jsonify(keywords=[])
     else:
         return jsonify(keywords=sorted(keyword_data.get('keywords', [])))
+
+from datetime import datetime
+
+@main.route('/calendar')
+@login_required
+def calendar_view():
+    today = datetime.today().strftime('%Y-%m-%d')
+    return render_template('show_calendar.html', today=today)
+
+
+@main.route('/get_calendar_events')
+@login_required
+def get_calendar_events():
+    """Get the calendar events.
+
+    Returns:
+        JSON -- The calendar events.
+
+    """
+    start_date_str = request.args.get('start', None)
+    end_date_str = request.args.get('end', None)
+    
+    datetime_format = '%Y-%m-%dT%H:%M:%S%z'
+    start_date = datetime.strptime(start_date_str, datetime_format) if start_date_str else None
+    end_date = datetime.strptime(end_date_str, datetime_format) if end_date_str else None
+
+    if start_date and end_date:
+        end_date += timedelta(days=1)
+        entries_cursor = mongo.db.entries.find({"timestamp": {"$gte": start_date, "$lt": end_date}})
+    else:
+        entries_cursor = mongo.db.entries.find()
+
+    # Counting entries per day
+    count_per_day = defaultdict(int)
+    events_data_per_day = defaultdict(list)
+    for entry in entries_cursor:
+        date_str = entry['timestamp'].strftime('%Y-%m-%d')
+        count_per_day[date_str] += 1
+        event_data = {
+            'title': entry.get('text', 'No Title'),
+            'description': entry.get('description', ''),
+        }
+        events_data_per_day[date_str].append(event_data)
+
+    # Creating events with title and description
+    events = []
+    for date, count in count_per_day.items():
+        title = "+{}".format(count) if count > 3 else "\n".join(event['title'] for event in events_data_per_day[date])
+        event = {
+            'title': title,
+            'start': date,  # Since the events are all-day, we only need the date part.
+            'allDay': True
+        }
+        events.append(event)
+    
+    return jsonify(events)
+
 
