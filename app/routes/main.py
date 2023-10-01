@@ -317,4 +317,25 @@ def get_calendar_events():
     
     return jsonify(events)
 
+from bson import ObjectId  # Importing ObjectId from bson
+
+@main.route('/update_entry/<string:entry_id>', methods=['POST'])
+@login_required
+def update_entry(entry_id):
+    data = request.json
+    updated_text = data.get('updated_text')
+
+    if not ObjectId.is_valid(entry_id):
+        return jsonify(success=False, error="Invalid Entry ID"), 400
+    
+    entry = mongo.db.entries.find_one({"_id": ObjectId(entry_id)})
+    if not entry:
+        return jsonify(success=False, error="Entry not found"), 404
+    
+    result = mongo.db.entries.update_one({"_id": ObjectId(entry_id)}, {"$set": {"text": updated_text}})
+    
+    if result.modified_count > 0:
+        return jsonify(success=True), 200
+    else:
+        return jsonify(success=False, error="Update Failed"), 400
 
