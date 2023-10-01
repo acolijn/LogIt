@@ -1,48 +1,41 @@
-<form method="get" action="/entries" , class="mb-4 mt-5">
-    <div class="form-row align-items-end">
+<!-- Search form -->
+<form method="get" action="/entries" class="mb-4 mt-5">
+    <div class="row align-items-end">
         <div class="col">
-            <label for="search-term">Text search:</label>
+            <label for="search-term" class="form-label">Text search:</label>
             <input type="text" id="search-term" name="search_term" class="form-control" placeholder="Search Entries"
                 value="{{ search_term|default('', true) }}">
         </div>
         <div class="col">
-            <label for="keyword-filter">Keyword:</label>
+            <label for="keyword-filter" class="form-label">Keyword:</label>
             <select name="keyword_filter" id="keywordDropdown" class="form-control">
                 <option value="" selected>None</option>
-                <!-- Keywords options will be populated dynamically -->
             </select>
-
         </div>
-
-        <!-- New Start Date input -->
         <div class="col">
-            <label for="start-date">From:</label>
-            <input type="date" id="start-date" name="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}"
-                placeholder="Start Date">  
-            </div>
-
-        <!-- New End Date input -->
-        <div class="col">
-            <label for="end-date">To:</label>
-            <input type="date" id="end-date" name="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}"
-                placeholder="End Date">
+            <label for="start-date" class="form-label">From:</label>
+            <input type="date" id="start-date" name="start_date" class="form-control"
+                value="{{ request.args.get('start_date', '') }}">
         </div>
-
         <div class="col">
-            <button type="submit" id="order-by" class="btn btn-primary" style="vertical-align: bottom;">Search</button>
+            <label for="end-date" class="form-label">To:</label>
+            <input type="date" id="end-date" name="end_date" class="form-control"
+                value="{{ request.args.get('end_date', '') }}">
+        </div>
+        <div class="col">
+            <button type="submit" id="order-by" class="btn btn-primary">Search</button>
         </div>
     </div>
 </form>
 
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     $(document).ready(function () {
         var currentKeyword = "{{ keyword_filter|default('', true) }}"; // Get the current keyword from Flask
         $.getJSON("/get-keywords", function (data) {
             var keywordDropdown = $("#keywordDropdown");
-
             $.each(data.keywords, function (index, keyword) {
                 var option = $('<option>', { value: keyword, text: keyword });
                 if (currentKeyword === keyword) {

@@ -1,21 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container mt-5">
 
-<h1 class="mb-5">Keyword Management</h1>
+    <h1 class="mb-5">Keyword Management</h1>
 
     <!-- Add keyword -->
     <h3>Add keyword</h3>
-    <!-- <form method="post" action="/add-keyword" class="mb-4 mt-2">-->
-    <form method="post" onsubmit="event.preventDefault(); addKeyword();" class="mb-4 mt-2">
 
-        <div class="form-row align-items-center">
+    <form method="post" onsubmit="event.preventDefault(); addKeyword();" class="mb-4 mt-2">
+        <div class="row align-items-center">
             <div class="col-auto">
-                <label for="new-keyword" class="sr-only">New Keyword</label>
-                <input type="text" id="new-keyword" name="keyword" class="form-control" style="width: 200px;"
-                    placeholder="Enter new keyword">
+                <input type="text" id="new-keyword" name="keyword" class="form-control"
+                    placeholder="Enter new keyword" />
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Add</button>
@@ -24,50 +21,52 @@
     </form>
 
     <h3>Remove keyword</h3>
-    <div class="form-row">
-        <div class="col">
-            <select class="custom-select" id="keyword-select" style="width: 200px;">
+    <div class="row">
+        <div class="col-auto">
+            <select class="form-select" id="keyword-select">
                 {% for keyword in keywords %}
                 <option>{{ keyword }}</option>
                 {% endfor %}
             </select>
+        </div>
+        <div class="col-auto">
             <button onclick="removeKeyword()" class="btn btn-primary">Remove</button>
-        </div>	
+        </div>
     </div>
 
-<script>
-    function addKeyword() {
-        const keyword = document.getElementById("new-keyword").value;
-        fetch("/add-keyword", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: "keyword=" + keyword
-        })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                location.reload();
-            });
-    }
+    <script>
+        function addKeyword() {
+            const keyword = document.getElementById("new-keyword").value;
+            fetch("/add-keyword", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: "keyword=" + keyword
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                });
+        }
 
-    function removeKeyword() {
-        const keyword = document.getElementById("keyword-select").value;
-        fetch("/remove-keyword", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: "keyword=" + keyword
-        })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                location.reload();
-            });
-    }
-</script>
+        function removeKeyword() {
+            const keyword = document.getElementById("keyword-select").value;
+            fetch("/remove-keyword", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: "keyword=" + keyword
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                });
+        }
+    </script>
+
 </div>
-
 {% endblock %}
