@@ -63,6 +63,11 @@
         const selectedKeywords = Array.from(modal.querySelectorAll('.keyword-item.selected'))
             .map(li => li.textContent); // Only send those that have the 'selected' class.
 
+        if (selectedKeywords.length === 0) {
+            // If no keywords are selected, consider "None" as a selected keyword.
+            selectedKeywords.push('None');
+        }
+
         fetch('/update-entry-keywords/' + entryId, {
             method: 'POST',
             body: JSON.stringify({ keywords: selectedKeywords }),
