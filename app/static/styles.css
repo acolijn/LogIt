@@ -14,40 +14,39 @@
     }
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.4);
+/* Styles for the keyword list */
+#keywordList {
+    list-style-type: none;
+    /* Remove bullets */
+    padding: 0;
+    /* Remove padding */
 }
 
-.modal-content {
-    position: relative;
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 30%;
-    /* Adjust width of the modal */
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
+.keyword-item {
     cursor: pointer;
+    /* Change cursor on hover */
+    padding: 8px 12px;
+    /* Add padding */
+    border: 1px solid #ccc;
+    /* Add border */
+    margin-bottom: 4px;
+    /* Add margin between items */
+    border-radius: 4px;
+    /* Optional: for rounded corners */
+    user-select: none;
+    /* Prevent text selection */
+    transition: background 0.3s;
+    /* Optional: for smooth color transition */
+}
+
+.keyword-item:hover {
+    background-color: #e0e0e0;
+    /* Change background color on hover */
+}
+
+.selected {
+    background-color: #007bff;
+    /* Change background color for selected items */
+    color: #fff;
+    /* Change text color for selected items */
 }

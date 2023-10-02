@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include 'keyword_select_modal.html' %}
+
 <div class="container mt-2"  style="max-width: 75%;">
 
 <h1 class="mb-4">Logbook Entries</h1>
@@ -29,17 +31,18 @@
             <!-- <td>{{ entry.text }}</td> -->
             <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this, '{{ entry.text }}')">{{ entry.text }}</td>
             <td>
-                <!-- <ul class="list-unstyled">
+                <ul class="list-unstyled">
                     {% for keyword in entry.keywords %}
-                    <li onclick="openKeywordModal('{{ entry._id }}', '{{ keyword }}')">{{ keyword }}</li>
+                    <li><a href="javascript:void(0);" onclick="openKeywordModal('{{ entry._id }}')">{{ keyword }}</a></li>
                     {% endfor %}
-                </ul> -->
-            
+                </ul>
+
+<!--             
                 <ul class="list-unstyled">
                     {% for keyword in entry.keywords %}
                     <li>{{ keyword }}</li>
                     {% endfor %}
-                </ul>   
+                </ul>    -->
             </td>
             <td>
                 {% if entry.image %}
@@ -67,6 +70,7 @@
  
 
 </table>
+
 
 {% include 'pagination.html' %}
 

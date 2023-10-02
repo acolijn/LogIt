@@ -340,5 +340,32 @@ def update_entry(entry_id):
     else:
         return jsonify(success=False, error="Update Failed"), 400
     
+# below is the code for updating keywords
+@main.route('/update-entry-keywords/<string:entry_id>', methods=['POST'])
+@login_required
+def update_entry_keywords(entry_id):
+    if not ObjectId.is_valid(entry_id):
+        return jsonify(success=False, error="Invalid Entry ID"), 400
+    
+    data = request.json
+    keywords = data.get('keywords', [])
+    
+    result = mongo.db.entries.update_one({"_id": ObjectId(entry_id)}, {"$set": {"keywords": keywords}})
+    
+    if result.modified_count > 0:
+        return jsonify(success=True), 200
+    else:
+        return jsonify(success=False, error="Update Failed"), 400
 
-
+@main.route('/get-entry-keywords/<string:entry_id>', methods=['GET'])
+@login_required
+def get_entry_keywords(entry_id):
+    if not ObjectId.is_valid(entry_id):
+        return jsonify(success=False, error="Invalid Entry ID"), 400
+    
+    entry = mongo.db.entries.find_one({"_id": ObjectId(entry_id)})
+    if not entry:
+        return jsonify(success=False, error="Entry not found"), 404
+    
+    print(entry.get('keywords', []))
+    return jsonify(keywords=entry.get('keywords', []))
