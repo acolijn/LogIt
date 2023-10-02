@@ -6,7 +6,7 @@
 
 <h1 class="mb-4">Logbook Entries</h1>
     {% include 'search_table.html' %}
-<!--    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+
 <table class="table table-striped table-responsive-md mt-1">
 
     {% include 'add_entry.html' %}
@@ -27,13 +27,19 @@
             <!-- Populate existing log entries here, as in your original code -->
             <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
             <!-- <td>{{ entry.text }}</td> -->
-            <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this)">{{ entry.text }}</td>
+            <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this, '{{ entry.text }}')">{{ entry.text }}</td>
             <td>
+                <!-- <ul class="list-unstyled">
+                    {% for keyword in entry.keywords %}
+                    <li onclick="openKeywordModal('{{ entry._id }}', '{{ keyword }}')">{{ keyword }}</li>
+                    {% endfor %}
+                </ul> -->
+            
                 <ul class="list-unstyled">
                     {% for keyword in entry.keywords %}
                     <li>{{ keyword }}</li>
                     {% endfor %}
-                </ul>
+                </ul>  
             </td>
             <td>
                 {% if entry.image %}
@@ -58,8 +64,9 @@
         </tr>
         {% endfor %}
     </tbody>
-</table>
+ 
 
+</table>
 
 {% include 'pagination.html' %}
 
@@ -84,31 +91,27 @@
 </script>
 
 <script>
-    // Add this function to your show_entries.html. This will enable the user to edit the entry text and update it in the database.
-    function updateEntryText(entryId, element) {
-        var originalText = element.textContent;  // assuming textContent contains the original text
-        
-        element.addEventListener('input', function() {
-            var newText = element.textContent;
-            if (newText !== originalText) {
-                // Make an AJAX call to update the entry in the database.
-                // Construct your AJAX call here.
-                fetch('/update_entry/' + entryId, {
-                    method: 'POST',
-                    body: JSON.stringify({updated_text: newText}),
-                    headers: {'Content-Type': 'application/json'}
-                }).then(response => {
-                    if (!response.ok) {
-                        // Handle the error
-                        console.error('Failed to update entry:', response.statusText);
-                    }
-                });
-            }
-        });
+    function updateEntryText(entryId, element, originalText) {
+        var newText = element.textContent;
+        if (newText !== originalText) {
+            console.log('Original text:', originalText);
+            console.log('New text:', newText);
+
+            // Make an AJAX call to update the entry in the database.
+            fetch('/update_entry/' + entryId, {
+                method: 'POST',
+                body: JSON.stringify({ updated_text: newText }),
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => {
+                if (!response.ok) {
+                    // Handle the error
+                    console.error('Failed to update entry:', response.statusText);
+                }
+            });
+        }
     }
+
 </script>
-
-
 
 {% endblock %}
 

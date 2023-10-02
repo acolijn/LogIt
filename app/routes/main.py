@@ -332,10 +332,13 @@ def update_entry(entry_id):
     if not entry:
         return jsonify(success=False, error="Entry not found"), 404
     
+    print(f"Updating entry with ID: {entry_id}"	)
     result = mongo.db.entries.update_one({"_id": ObjectId(entry_id)}, {"$set": {"text": updated_text}})
     
     if result.modified_count > 0:
         return jsonify(success=True), 200
     else:
         return jsonify(success=False, error="Update Failed"), 400
+    
+
 
