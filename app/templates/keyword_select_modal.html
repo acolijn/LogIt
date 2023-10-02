@@ -22,8 +22,14 @@
 <script>
     function openKeywordModal(entryId) {
         Promise.all([
-            fetch('/get-keywords').then(response => response.json()),
-            fetch('/get-entry-keywords/' + entryId).then(response => response.json())
+            fetch('/get-keywords').then(response => {
+                if (!response.ok) throw Error('Error fetching keywords: ' + response.statusText);
+                return response.json();
+            }),
+            fetch('/get-entry-keywords/' + entryId).then(response => {
+                if (!response.ok) throw Error('Error fetching entry keywords: ' + response.statusText);
+                return response.json();
+            })
         ]).then(([allowedKeywords, currentKeywords]) => {
             const keywordList = document.getElementById('keywordList');
             keywordList.innerHTML = ''; // Clear any previous keywords.
@@ -31,24 +37,25 @@
                 const listItem = document.createElement('li');
                 listItem.textContent = keyword;
                 listItem.className = 'keyword-item'; // Add a class to style it.
-                // If the keyword is in the entry's current keywords, add the selected class.
                 if (currentKeywords.keywords.includes(keyword)) {
-                    listItem.classList.add('selected');
+                    listItem.classList.add('selected'); // Add selected class if the keyword is in the entry's current keywords.
                 }
                 listItem.onclick = function () {
                     this.classList.toggle('selected'); // Toggle selected class on click.
                 };
-
                 keywordList.appendChild(listItem);
             });
-            const modal = document.getElementById('keywordModal');
-            modal.style.display = 'block';
-            modal.dataset.entryId = entryId; // Store entryId in the modal to use it in updateKeywords function.
+
+            const modalElement = document.getElementById('keywordModal');
+            const modalInstance = new bootstrap.Modal(modalElement);
+            modalInstance.show(); // This uses Bootstrap's method to show the modal.
+
+            modalElement.dataset.entryId = entryId; // Store entryId in the modal to use it in updateKeywords function.
+        }).catch(error => {
+            console.error(error); // Log any error that occurred during the fetch.
         });
-        const modalElement = document.getElementById('keywordModal');
-        const modalInstance = new bootstrap.Modal(modalElement);
-        modalInstance.show(); // This uses Bootstrap's method to show the modal.
     }
+
 
     function updateKeywords() {
         const modal = document.getElementById('keywordModal');
