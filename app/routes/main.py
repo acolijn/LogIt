@@ -369,3 +369,5 @@ def get_entry_keywords(entry_id):
     
     print(entry.get('keywords', []))
     return jsonify(keywords=entry.get('keywords', []))
+
+# let us now make a fnction to delete an entry
