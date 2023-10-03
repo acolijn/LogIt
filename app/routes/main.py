@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify, session
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
@@ -71,8 +71,11 @@ def handle_entry():
         HTML page -- The add entry form.
 
     """
-    # Extract data from form
+    # get the name of the logbook from the session
+    logbook_id = ObjectId(session['logbook'])
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
 
+    # Extract data from form
     print("handle_entry")
     text = request.form['text']
     keywords = request.form.getlist('keywordSelect[]')
@@ -84,8 +87,8 @@ def handle_entry():
     if 'image' in request.files:
         image = request.files['image']
         if image and allowed_file(image.filename):  # Check if image object is not None
-            filename = secure_filename(image.filename)
-            full_path = os.path.join(UPLOAD_FOLDER, filename)
+            filename = os.path.join(logbook['name'],  image.filename)
+            full_path = os.path.join(UPLOAD_FOLDER,  logbook['name'],  image.filename)
             print(f"Saving to {full_path}")  # Debug: print the full path where the image will be saved
             try:
                 image.save(full_path)
@@ -102,7 +105,8 @@ def handle_entry():
         "text": text,
         "keywords": keywords,
         "image": image_filename,   # store the path or filename to the uploaded image
-        "user": current_user.username   # this should come from your user management system
+        "user": current_user.username,   # this should come from your user management system
+        "logbook": ObjectId(session['logbook'])  # retrieve logbook id/name from the session, default to None if not set
     }
 
     # Insert the entry into the database
@@ -122,6 +126,7 @@ def show_entries():
         HTML page -- The logbook entries page.
 
     """
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session, default to None if not set
 
     # Extract query parameters
     search_term = request.args.get('search_term', '')
@@ -130,7 +135,9 @@ def show_entries():
     end_date_str = request.args.get('end_date', None)
 
     query = {}
-    
+    # always filter by logbook
+    query["logbook"] = logbook_id
+
     if search_term:
         query["text"] = {"$regex": search_term, "$options": "i"}
         
@@ -189,17 +196,21 @@ def add_keyword():
         str: Success or failure message.
 
     """
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
+
     keyword = request.form.get('keyword')  # Get the keyword from the form data
     if not keyword:
         return "Keyword not provided", 400
 
-    # Add the new keyword to the list of allowed keywords in the database
-    result = mongo.db.allowed_keywords.update_one({}, {"$addToSet": {"keywords": keyword}})
-    
+    # Add the new keyword to the list of allowed keywords of the specific logbook in the database
+    result = mongo.db.logbooks.update_one({"_id": logbook_id}, {"$addToSet": {"allowed_keywords": keyword}})
+
     if result.modified_count:
-        return f"Keyword '{keyword}' added successfully!", 200
+        return f"Keyword '{keyword}' added successfully to {logbook['name']} logbook!", 200
     else:
-        return f"Keyword '{keyword}' already exists or there was an error!", 400
+        return f"Keyword '{keyword}' already exists in {logbook['name']} logbook or there was an error!", 400
+
 
 @main.route('/remove-keyword', methods=['POST'])
 @login_required
@@ -210,17 +221,21 @@ def remove_keyword():
         str: Success or failure message.
 
     """
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
+
     keyword = request.form.get('keyword')  # Get the keyword from the form data
     if not keyword:
         return "Keyword not provided", 400
 
-    # Remove the keyword from the list of allowed keywords in the database
-    result = mongo.db.allowed_keywords.update_one({}, {"$pull": {"keywords": keyword}})
-    
+    # Remove the keyword from the list of allowed keywords of the specific logbook in the database
+    result = mongo.db.logbooks.update_one({"_id": logbook_id}, {"$pull": {"allowed_keywords": keyword}})
+
     if result.modified_count:
-        return f"Keyword '{keyword}' removed successfully!", 200
+        return f"Keyword '{keyword}' removed successfully from {logbook['name']} logbook!", 200
     else:
-        return f"Keyword '{keyword}' doesn't exist or there was an error!", 400
+        return f"Keyword '{keyword}' doesn't exist in {logbook['name']} logbook or there was an error!", 400
+
 
 @main.route('/keywords')
 @login_required
@@ -231,20 +246,18 @@ def show_keywords():
         HTML page -- The keywords page.
 
     """
-    keyword_data = mongo.db.allowed_keywords.find_one()
-    if not keyword_data:
-        # If no keyword data exists, initialize it with an empty list
-        mongo.db.allowed_keywords.insert_one({"keywords": []})
-        keywords = []
-    else:
-        keywords = keyword_data.get('keywords', [])
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
+
+    # Fetch keywords from logbook or default to an empty list if not present
+    keywords = logbook.get('allowed_keywords', []) if logbook else []
 
     # Sort the keywords alphabetically
-    #keywords = sorted(keywords)
     keywords = sorted(keywords, key=lambda s: s.lower())
 
     # Render the keywords page
     return render_template('keywords.html', keywords=keywords)
+
 
 @main.route('/get-keywords')
 @login_required
@@ -255,11 +268,14 @@ def get_keywords():
         JSON -- The list of allowed keywords.
 
     """ 
-    keyword_data = mongo.db.allowed_keywords.find_one()
-    if not keyword_data:
-        return jsonify(keywords=[])
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session, default to None if not set
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
+
+    if 'allowed_keywords' in logbook and logbook['allowed_keywords']:
+        keyword_data = logbook['allowed_keywords']
+        return jsonify(keywords=sorted(keyword_data))
     else:
-        return jsonify(keywords=sorted(keyword_data.get('keywords', [])))
+        return jsonify(keywords=[])
 
 from datetime import datetime
 
@@ -279,6 +295,8 @@ def get_calendar_events():
         JSON -- The calendar events.
 
     """
+    logbook_id = ObjectId(session['logbook'])  # retrieve logbook id/name from the session, default to None if not set
+
     start_date_str = request.args.get('start', None)
     end_date_str = request.args.get('end', None)
     
@@ -286,11 +304,17 @@ def get_calendar_events():
     start_date = datetime.strptime(start_date_str, datetime_format) if start_date_str else None
     end_date = datetime.strptime(end_date_str, datetime_format) if end_date_str else None
 
+    # Fetching entries from MongoDB based on start and end dates if provided
+
+    # shall we also include the logbook id in the query?
+    query = {"logbook": logbook_id}
     if start_date and end_date:
         end_date += timedelta(days=1)
-        entries_cursor = mongo.db.entries.find({"timestamp": {"$gte": start_date, "$lt": end_date}})
+        query["timestamp"] = {"$gte": start_date, "$lt": end_date}
+        entries_cursor = mongo.db.entries.find(query)
+        # entries_cursor = mongo.db.entries.find({"timestamp": {"$gte": start_date, "$lt": end_date}})
     else:
-        entries_cursor = mongo.db.entries.find()
+        entries_cursor = mongo.db.entries.find(query)
 
     # Counting entries per day
     count_per_day = defaultdict(int)
@@ -322,6 +346,8 @@ from bson import ObjectId  # Importing ObjectId from bson
 @main.route('/update_entry/<string:entry_id>', methods=['POST'])
 @login_required
 def update_entry(entry_id):
+    """Update an entry in the database.
+    """
     data = request.json
     updated_text = data.get('updated_text')
 

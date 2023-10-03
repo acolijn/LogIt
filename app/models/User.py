@@ -6,9 +6,10 @@ from app import mongo
 class User(UserMixin):
     """User Class"""	
     # Initialization
-    def __init__(self, _id=None, username=None, password=None, is_admin=False):
+    def __init__(self, _id=None, username=None, email=None, password=None, is_admin=False):
         self._id = _id
         self.username = username
+        self.email = email  # New email field
         self.password = password
         self.is_admin = is_admin
 

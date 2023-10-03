@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Admin Page</h2>
+
+    <div class="row">
+        <!-- User Registration Form -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Register New User</div>
+                <div class="card-body">
+                    <form method="post">
+                        {{ registration_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ registration_form.username.label(class="form-label") }}
+                            {{ registration_form.username(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ registration_form.email.label(class="form-label") }}
+                            {{ registration_form.email(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ registration_form.password.label(class="form-label") }}
+                            {{ registration_form.password(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ registration_form.confirm_password.label(class="form-label") }}
+                            {{ registration_form.confirm_password(class="form-control") }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <input type="submit" name="register_user" value="Register" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logbook Creation Form -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Create New Logbook</div>
+                <div class="card-body">
+                    <form method="post">
+                        {{ logbook_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ logbook_form.logbook_name.label(class="form-label") }}
+                            {{ logbook_form.logbook_name(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ logbook_form.allowed_keywords.label(class="form-label") }}
+                            {{ logbook_form.allowed_keywords(class="form-control") }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <input type="submit" name="create_logbook" value="Create Logbook" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add User to Logbook Form -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Add User to Logbook</div>
+                <div class="card-body">
+                    <form method="post">
+                        {{ user_form.hidden_tag() }}
+<div class="mb-3">
+    {{ user_form.logbook_select.label(class="form-label") }}
+    {{ user_form.logbook_select(id="id_of_logbook_select", class="form-control") }}
+</div>
+<div class="mb-3">
+    {{ user_form.user_select.label(class="form-label") }}
+    {{ user_form.user_select(id="id_of_username_select", class="form-control") }}
+</div>
+
+                        <div class="d-grid gap-2">
+                            <input type="submit" name="add_user_to_logbook" value="Add User to Logbook" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+            const logbookSelect = document.getElementById('id_of_logbook_select'); // replace with the correct id
+            const userSelect = document.getElementById('id_of_username_select'); // replace with the correct id
+
+            logbookSelect.addEventListener('change', function () {
+                const logbookId = this.value;
+
+                fetch(`/get-available-users/${logbookId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // clear existing options
+                        userSelect.innerHTML = '';
+
+                        // populate dropdown with new data
+                        data.users.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = user.name;
+                            userSelect.appendChild(option);
+                        });
+                    });
+            });
+        });
+</script>
+
+{% endblock %}

@@ -13,6 +13,14 @@
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div class="mb-3">
+                        <label for="logbook" class="form-label">Select Logbook</label>
+                        <select class="form-control" id="logbook" name="logbook" required>
+                            {% for logbook in logbooks %}
+                            <option value="{{ logbook._id }}">{{ logbook.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
