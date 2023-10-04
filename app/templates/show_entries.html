@@ -2,7 +2,12 @@
 
 {% block content %}
 
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/4.16.1/standard/ckeditor.js"></script>
+
 {% include 'keyword_select_modal.html' %}
+
+{% include 'change_text_modal.html' %}
 
 <div class="container mt-2"  style="max-width: 75%;">
 
@@ -29,7 +34,14 @@
             <!-- Populate existing log entries here, as in your original code -->
             <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
             <!-- <td>{{ entry.text }}</td> -->
-            <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this, '{{ entry.text }}')">{{ entry.text }}</td>
+            <!-- <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this, '{{ entry.text }}')">{{ entry.text|safe }}</td> -->
+            <!-- <td onclick="openEditor('{{ entry._id }}', '{{ entry.text|safe }}')">{{ entry.text|safe }}</td> -->
+            <td data-entry-id="{{ entry._id }}" data-entry-text="{{ entry.text|escape }}" onclick="openEditor(this)">
+                {{ entry.text|safe }}
+            </td>
+
+
+
             <td>
                 <ul class="list-unstyled">
                     {% for keyword in entry.keywords %}
@@ -60,10 +72,7 @@
         </tr>
         {% endfor %}
     </tbody>
- 
-
 </table>
-
 
 {% include 'pagination.html' %}
 
@@ -87,7 +96,7 @@
     });
 </script>
 
-<script>
+<!-- <script>
     function updateEntryText(entryId, element, originalText) {
         var newText = element.textContent;
         if (newText !== originalText) {
@@ -107,8 +116,7 @@
             });
         }
     }
-
-</script>
+</script> -->
 
 {% endblock %}
 

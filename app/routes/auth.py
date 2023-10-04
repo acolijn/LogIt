@@ -60,29 +60,6 @@ def load_user(user_id):
         return User(**user_data)    
     return None
 
-@auth.route('/register', methods=['GET', 'POST'])
-@login_required
-def register():
-    """Register a new user."""	
-    # Ensure only admin can access
-    if not current_user.is_admin:
-        flash('Access denied!', 'danger')
-        return redirect(url_for('main.show_entries'))
-
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        hashed_password = User.set_password(form.password.data)
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        new_user.save()
-        flash('New user registered successfully!', 'success')
-        return redirect(url_for('auth.register'))
-    elif request.method == 'POST':  # Check if the form was submitted
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f"Error in the {getattr(form, field).label.text} field - {error}", 'danger')
-
-    return render_template('register.html', form=form)
-
 @auth.route('/')
 def index():
     """Redirect to login page."""	
@@ -91,6 +68,14 @@ def index():
 @auth.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin_page():
+    """Admin page.
+    
+    - Create logbooks
+    - Add users to logbooks
+    - Register new users
+    
+    Accessible only to admin users.
+    """
     if not current_user.is_admin:
         flash('Access denied!', 'danger')
         return redirect(url_for('main.show_entries'))

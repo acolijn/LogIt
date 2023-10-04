@@ -66,14 +66,14 @@
                 <div class="card-body">
                     <form method="post">
                         {{ user_form.hidden_tag() }}
-<div class="mb-3">
-    {{ user_form.logbook_select.label(class="form-label") }}
-    {{ user_form.logbook_select(id="id_of_logbook_select", class="form-control") }}
-</div>
-<div class="mb-3">
-    {{ user_form.user_select.label(class="form-label") }}
-    {{ user_form.user_select(id="id_of_username_select", class="form-control") }}
-</div>
+                        <div class="mb-3">
+                            {{ user_form.logbook_select.label(class="form-label") }}
+                            {{ user_form.logbook_select(id="id_of_logbook_select", class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ user_form.user_select.label(class="form-label") }}
+                            {{ user_form.user_select(id="id_of_username_select", class="form-control") }}
+                        </div>
 
                         <div class="d-grid gap-2">
                             <input type="submit" name="add_user_to_logbook" value="Add User to Logbook" class="btn btn-primary">

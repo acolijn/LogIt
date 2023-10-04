@@ -1,3 +1,4 @@
+
 <thead class="table-dark">
     <tr>
         <th></th>
@@ -16,7 +17,8 @@
 
             <td>
                 <div class="mb-1">
-                    <textarea class="form-control" name="text" id="text" rows="3" required></textarea>
+                    <!-- <textarea class="form-control" name="text" id="text" rows="3" required></textarea> -->
+                    <textarea class="form-control" name="text" id="text-editor" rows="3" required></textarea>
                 </div>
             </td>
             <td>
@@ -35,6 +37,9 @@
     </tr>
 </tbody>
 
+<script>
+    CKEDITOR.replace('text-editor');
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {

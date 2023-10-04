@@ -1,2 +1,4 @@
 app/static/upload/
 secrets/
+migrate.py
+setup.py
