@@ -2,16 +2,13 @@
 
 {% block content %}
 
-<!-- CKEditor -->
-<script src="https://cdn.ckeditor.com/4.16.1/standard/ckeditor.js"></script>
-
 {% include 'keyword_select_modal.html' %}
 
 {% include 'change_text_modal.html' %}
 
 <div class="container mt-2"  style="max-width: 80%;">
 
-<h1 class="mb-4">Logbook Entries</h1>
+<h1 class="mb-4"> {{session['logbook_name']|upper}} Logbook Entries</h1>
     {% include 'search_table.html' %}
 
 <table class="table table-striped table-responsive-md mt-1">
@@ -31,17 +28,11 @@
         <!-- Existing log entries -->
         {% for entry in entries %}
         <tr>
-            <!-- Populate existing log entries here, as in your original code -->
+            <!-- Populate existing log entries here -->
             <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-            <!-- <td>{{ entry.text }}</td> -->
-            <!-- <td contenteditable="true" onblur="updateEntryText('{{ entry._id }}', this, '{{ entry.text }}')">{{ entry.text|safe }}</td> -->
-            <!-- <td onclick="openEditor('{{ entry._id }}', '{{ entry.text|safe }}')">{{ entry.text|safe }}</td> -->
             <td data-entry-id="{{ entry._id }}" data-entry-text="{{ entry.text|escape }}" onclick="openEditor(this)">
                 {{ entry.text|safe }}
             </td>
-
-
-
             <td>
                 <ul class="list-unstyled">
                     {% for keyword in entry.keywords %}
@@ -78,6 +69,7 @@
 
 <!-- Include Fancybox Library -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
 <!-- Initialize Fancybox -->
@@ -95,28 +87,6 @@
         });
     });
 </script>
-
-<!-- <script>
-    function updateEntryText(entryId, element, originalText) {
-        var newText = element.textContent;
-        if (newText !== originalText) {
-            console.log('Original text:', originalText);
-            console.log('New text:', newText);
-
-            // Make an AJAX call to update the entry in the database.
-            fetch('/update_entry/' + entryId, {
-                method: 'POST',
-                body: JSON.stringify({ updated_text: newText }),
-                headers: { 'Content-Type': 'application/json' }
-            }).then(response => {
-                if (!response.ok) {
-                    // Handle the error
-                    console.error('Failed to update entry:', response.statusText);
-                }
-            });
-        }
-    }
-</script> -->
 
 {% endblock %}
 

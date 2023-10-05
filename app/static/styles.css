@@ -50,3 +50,24 @@
     color: #fff;
     /* Change text color for selected items */
 }
+
+/* Change primary color */
+:root {
+    --bs-primary: #4CAF50;
+    /* Change to your desired green color */
+}
+
+/* Depending on your needs, you may also need to customize other components 
+   like buttons, links, etc., to reflect the new color. For example: */
+.btn-primary {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #45a047;
+    /* Slightly darker shade of green */
+    border-color: #45a047;
+}

@@ -27,11 +27,14 @@ def login():
 
         # check if the user is in the list of users for the logbook
         logbook = mongo.db.logbooks.find_one({"_id": ObjectId(chosen_logbook)})
+        
         if user and user.check_password(password) and user._id in logbook['users']:
             # Log in the user
             login_user(user)
             # session variable to store the logbook id
             session['logbook'] = str(chosen_logbook)
+            session['logbook_name'] = logbook['name']
+
             flash('You are successfully logged in!', 'success')
             return redirect(url_for('main.show_entries'))
         elif user and user.check_password(password) and user._id not in logbook['users']:
@@ -48,6 +51,7 @@ def login():
 @login_required
 def logout():
     """Logout the current user."""	
+    session.clear()
     logout_user()
     return redirect(url_for('auth.login'))
 

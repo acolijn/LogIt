@@ -150,7 +150,7 @@ def show_entries():
         end_date = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1)  # Adding 1 day to include the end date
         query["timestamp"] = {"$gte": start_date, "$lte": end_date}
 
-    per_page = 5
+    per_page = 10
     page_number = int(request.args.get('page', 1))
 
     skip_entries = (page_number - 1) * per_page
@@ -278,7 +278,6 @@ def get_keywords():
     else:
         return jsonify(keywords=[])
 
-from datetime import datetime
 
 @main.route('/calendar')
 @login_required
