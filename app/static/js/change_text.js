@@ -5,6 +5,7 @@
 
 let currentEntryId = null;
 
+
 function destroyCKEditor() {
     // Destroy the CKEditor instance if it exists
     if (CKEDITOR.instances.ckeditorArea) {
@@ -23,7 +24,22 @@ function openEditor(element) {
     const originalText = element.getAttribute('data-entry-text');
 
     currentEntryId = entryId;
-    CKEDITOR.replace('ckeditorArea').setData(originalText);
+
+    // Create the CKEditor instance with custom toolbar configuration
+    CKEDITOR.replace('ckeditorArea', {
+        toolbar: [
+            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo'] },
+            { name: 'editing', items: ['Find', 'Replace'] },
+            '/',
+            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
+ //           { name: 'links', items: ['Link', 'Unlink'] },
+ //           { name: 'insert', items: ['Image', 'Table'] },
+            { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
+            { name: 'colors', items: ['TextColor', 'BGColor'] },
+            { name: 'tools', items: ['Maximize'] }
+        ]
+    }).setData(originalText);
     $('#editorModal').modal('show');
 }
 

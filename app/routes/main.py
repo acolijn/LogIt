@@ -9,6 +9,7 @@ from collections import defaultdict
 import pytz
 
 from app import mongo
+import html, re
 
 main = Blueprint('main', __name__)
 
@@ -331,7 +332,13 @@ def get_calendar_events():
     # Creating events with title and description
     events = []
     for date, count in count_per_day.items():
+
         title = "+{}".format(count) if count > 3 else "\n".join(event['title'] for event in events_data_per_day[date])
+        title = html.unescape(title)  # Convert HTML entities to their actual characters
+        title = re.sub('<[^<]+?>', '', title)  # Remove HTML tags
+        title = title.split('\n')[0]
+        title = title[:20] + '...' if len(title) > 20 else title  # Truncate the title to 20 characters
+
         event = {
             'title': title,
             'start': date,  # Since the events are all-day, we only need the date part.
