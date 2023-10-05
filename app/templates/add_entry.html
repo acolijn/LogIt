@@ -41,7 +41,19 @@
 <!-- <script src="{{ url_for('static', filename='js/change_text.js') }}"></script> -->
 
 <script>
-    CKEDITOR.replace('text-editor');
+    CKEDITOR.replace('text-editor', {
+        toolbar: ckeditor_toolbar
+        // toolbar: [
+        //     { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', '-', 'Undo', 'Redo'] },
+        //     { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll'] },
+        //     { name: 'basicstyles', items: ['Bold', 'Italic'] },
+        //     { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'] },
+        //     //{ name: 'links', items: ['Link', 'Unlink'] },
+        //     //{ name: 'insert', items: ['Image', 'Table', 'HorizontalRule'] },
+        //     { name: 'styles', items: ['Styles', 'Format'] },
+        //     { name: 'about', items: ['About'] }
+        // ]
+    });
 </script>
 
 <script>

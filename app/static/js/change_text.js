@@ -5,6 +5,15 @@
 
 let currentEntryId = null;
 
+ckeditor_toolbar = [
+    {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo'] },
+    { name: 'editing', items: ['Find', 'Replace'] },
+    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
+    { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
+    { name: 'colors', items: ['TextColor', 'BGColor'] },
+]
+
 
 function destroyCKEditor() {
     // Destroy the CKEditor instance if it exists
@@ -12,6 +21,7 @@ function destroyCKEditor() {
         CKEDITOR.instances.ckeditorArea.destroy();
     }
 }
+
 
 function openEditor(element) {
     /*
@@ -27,18 +37,8 @@ function openEditor(element) {
 
     // Create the CKEditor instance with custom toolbar configuration
     CKEDITOR.replace('ckeditorArea', {
-        toolbar: [
-            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo'] },
-            { name: 'editing', items: ['Find', 'Replace'] },
-            '/',
-            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
-            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
- //           { name: 'links', items: ['Link', 'Unlink'] },
- //           { name: 'insert', items: ['Image', 'Table'] },
-            { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
-            { name: 'colors', items: ['TextColor', 'BGColor'] },
-            { name: 'tools', items: ['Maximize'] }
-        ]
+        extraPlugins: 'colorbutton',
+        toolbar: ckeditor_toolbar
     }).setData(originalText);
     $('#editorModal').modal('show');
 }
