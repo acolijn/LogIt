@@ -11,7 +11,6 @@ ckeditor_toolbar = [
     { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
     { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
     { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
-    { name: 'colors', items: ['TextColor', 'BGColor'] },
 ]
 
 
@@ -37,7 +36,6 @@ function openEditor(element) {
 
     // Create the CKEditor instance with custom toolbar configuration
     CKEDITOR.replace('ckeditorArea', {
-        extraPlugins: 'colorbutton',
         toolbar: ckeditor_toolbar
     }).setData(originalText);
     $('#editorModal').modal('show');
