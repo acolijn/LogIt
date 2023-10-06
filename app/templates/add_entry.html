@@ -28,13 +28,23 @@
             </td>
             <td colspan="2">
                 <div class="form-group">
-                    <input type="file" class="form-control-file" id="image" name="image">
+                    <!-- Button to trigger the Bootstrap modal -->
+
+                <!-- The "Upload Images" button that triggers the modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageUploadModal">
+                    Upload File(s)
+                </button>
+
+                <!-- A hidden file input in the main form to store selected images -->
+                <input type="file" class="form-control" id="mainFileInput" name="image" multiple style="display: none;">
+                <div id="selectedFilesList"></div>
+
+
                 </div>
             </td>
         </form>
     </tr>
 </tbody>
-
 
 <script>
     CKEDITOR.replace('text-editor', {

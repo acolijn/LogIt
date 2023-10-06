@@ -1,0 +1,82 @@
+<!-- Bootstrap 5 Modal for Initial Image Upload -->
+<div class="modal fade" id="imageUploadModal" tabindex="-1" aria-labelledby="imageUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageUploadModalLabel">Upload Images</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="modalFileInput" name="image" multiple>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="selectImagesButton" data-bs-dismiss="modal">Select</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#selectImagesButton').on('click', function () {
+            // Copy files from modal's input to main form's input
+            const files = $('#modalFileInput').prop('files');
+            $('#mainFileInput').prop('files', files);
+
+            // Extract the names of the selected files
+            var filenames = [];
+            for (var i = 0; i < files.length; i++) {
+                filenames.push(files[i].name);
+            }
+
+            // Display the file names in the #selectedFilesList div
+            $('#selectedFilesList').text(filenames.join(', '));
+
+            // Close the modal
+            $('#imageUploadModal').modal('hide');
+        });
+    });
+
+</script>
+
+<!-- Bootstrap 5 Modal for additional Image Upload -->
+
+<script>
+    $('#imageAdditionModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget); // Button that triggered the modal
+        const entryId = button.data('entry-id'); // Extract the entry_id from the data-entry-id attribute
+        const modal = $(this);
+        modal.find('input[name="entry_id"]').val(entryId);
+    });
+</script>
+<div class="modal fade" id="imageAdditionModal" tabindex="-1" aria-labelledby="imageAdditionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageAdditionModalLabel">Add More Images</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" action="/add_images_route">
+                    <div class="mb-3">
+                        <input type="file" class="form-control" name="newImage" multiple>
+                    </div>
+                    <input type="hidden" name="entry_id">
+                    <!-- to identify which entry to update -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Upload">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

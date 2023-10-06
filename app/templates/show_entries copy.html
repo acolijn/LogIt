@@ -21,7 +21,7 @@
             <th style="width:10%;">Timestamp</th>
             <th style="width:75%;">Entry</th>
             <th style="width:5%;">Keywords</th>
-            <th style="width:5%;">File(s)</th>
+            <th style="width:5%;">Image</th>
             <th style="width:5%;">User</th>
         </tr>
     </thead>
@@ -41,9 +41,10 @@
                 </ul>
             </td>
             <td>
-                {% if entry.images and entry.images|length >0 %}
+                {% if entry.images and entry.images|length > 0 %}
                     {% for image_filename in entry.images %}
-                        {% if image_filename is string and image_filename.endswith('.pdf') %}
+                        {% if image_filename.endswith('.pdf') %}
+
                             <a href="{{ url_for('static', filename='upload/' + image_filename) }}" target="_blank">
                                 <!-- Display PDF icon or thumbnail -->
                                 <img src="{{ url_for('static', filename='icons/pdf_icon.png') }}" alt="PDF Document" class="img-thumbnail"
@@ -69,7 +70,7 @@
 
 {% include 'pagination.html' %}
 
-{% include 'add_image_modal.html' %}
+{% include 'upload_image_modal.html' %}
 
 
 <!-- Include Fancybox Library -->

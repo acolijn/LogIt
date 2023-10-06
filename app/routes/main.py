@@ -83,21 +83,26 @@ def handle_entry():
 
     # Handle image upload
     print('static folder = ', current_app.static_folder )   
-    image_filename = None
+
+    image_filenames = []
+
+    print("request.files = ", request.files)
 
     if 'image' in request.files:
-        image = request.files['image']
-        if image and allowed_file(image.filename):  # Check if image object is not None
-            filename = os.path.join(logbook['name'],  image.filename)
-            full_path = os.path.join(UPLOAD_FOLDER,  logbook['name'],  image.filename)
-            print(f"Saving to {full_path}")  # Debug: print the full path where the image will be saved
-            try:
-                image.save(full_path)
-            except Exception as e:
-                print(f"Error saving image: {e}")  # Debug: print any exception raised during saving
-            image_filename = filename
-        else:
-            print("Image is not allowed or no image received")  # Debug: print if the image is not allowed or no image received
+        images = request.files.getlist('image')  # Get list of uploaded images
+        print("images = ", images)
+        for image in images:
+            if image and allowed_file(image.filename):
+                filename = os.path.join(logbook['name'], image.filename)
+                full_path = os.path.join(UPLOAD_FOLDER, logbook['name'], image.filename)
+                try:
+                    image.save(full_path)
+                    image_filenames.append(filename)
+                except Exception as e:
+                    print(f"Error saving image: {e}")
+            else:
+                print("Image is not allowed or no image received")
+
 
     
     # Store the data in MongoDB
@@ -105,7 +110,7 @@ def handle_entry():
         "timestamp": datetime.utcnow(),
         "text": text,
         "keywords": keywords,
-        "image": image_filename,   # store the path or filename to the uploaded image
+        "images": image_filenames,   # store the path or filename to the uploaded image
         "user": current_user.username,   # this should come from your user management system
         "logbook": ObjectId(session['logbook'])  # retrieve logbook id/name from the session, default to None if not set
     }

@@ -3,10 +3,45 @@ from werkzeug.security import generate_password_hash
 import getpass
 
 def migrate():
-    xams_logbook_id = mongo.db.logbooks.find_one({"name": "xams"})["_id"]  # Fetch the ID of the xams logbook
+    # Get the collection
+    entries = mongo.db.entries
+    
+    # Convert 'image' field to an array and store in 'images'
+    entries.update_many(
+        {"image": {"$exists": True}},
+        [
+            {
+                "$set": {
+                    "images": [{"$ifNull": ["$image", []]}]
+                }
+            },
+            {
+                "$unset": ["image"]
+            }
+        ]
+    )
 
-    # Update all entries to be associated with the xams logbook
-    mongo.db.entries.update_many({}, {"$set": {"logbook": xams_logbook_id}})
+    # Flatten nested arrays in 'images'
+    entries.update_many(
+        {"images.0": {"$type": "array"}},
+        [
+            {
+                "$set": {
+                    "images": {"$arrayElemAt": ["$images", 0]}
+                }
+            }
+        ]
+    )
+
+    # Remove entries where images field is a string (due to earlier mistake)
+    entries.update_many(
+        {"images": "$images.0"},
+        {
+            "$set": {"images": []}
+        }
+    )
+
+
 
 if __name__ == "__main__":
     # Initialize the Flask app
