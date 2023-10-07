@@ -121,6 +121,55 @@ def handle_entry():
     # return redirect(url_for('main.add_entry_form'))
     return redirect(url_for('main.show_entries'))
 
+@main.route('/add_images', methods=['POST'])
+@login_required
+def add_images():
+    """Handle the addition of more images to an existing entry."""
+    
+    # Retrieve entry_id from form
+    entry_id = request.form['entry_id']
+
+    # Check if entry exists
+    entry = mongo.db.entries.find_one({"_id": ObjectId(entry_id)})
+    if not entry:
+        # Handle the case where the entry does not exist. Maybe redirect with an error message.
+        return redirect(url_for('main.show_entries', error="Entry not found"))
+
+    # Fetch the logbook document using the ObjectId from the entry
+    logbook = mongo.db.logbooks.find_one({"_id": ObjectId(entry['logbook'])})
+
+    # If for some reason the logbook is not found, handle it appropriately.
+    if not logbook:
+        return redirect(url_for('main.show_entries', error="Logbook not found"))
+
+    logbook_name = logbook['name']  # Assuming the logbook has a 'name' field
+
+    # Handle image upload
+    new_image_filenames = []
+
+    if 'newImage' in request.files:
+        images = request.files.getlist('newImage')  # Get list of uploaded images
+        for image in images:
+            if image and allowed_file(image.filename):
+                filename = os.path.join(logbook_name, image.filename)  
+                full_path = os.path.join(UPLOAD_FOLDER, logbook_name, image.filename)
+                try:
+                    image.save(full_path)
+                    new_image_filenames.append(filename)
+                except Exception as e:
+                    print(f"Error saving image: {e}")
+
+    # Update the entry in MongoDB with new images
+    if new_image_filenames:
+        mongo.db.entries.update_one(
+            {"_id": ObjectId(entry_id)},
+            {"$push": {"images": {"$each": new_image_filenames}}}
+        )
+
+    return redirect(url_for('main.show_entries'))
+
+
+
 from math import ceil
 
 @main.route('/entries')

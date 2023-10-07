@@ -44,14 +44,7 @@
 
 <!-- Bootstrap 5 Modal for additional Image Upload -->
 
-<script>
-    $('#imageAdditionModal').on('show.bs.modal', function (event) {
-        const button = $(event.relatedTarget); // Button that triggered the modal
-        const entryId = button.data('entry-id'); // Extract the entry_id from the data-entry-id attribute
-        const modal = $(this);
-        modal.find('input[name="entry_id"]').val(entryId);
-    });
-</script>
+
 <div class="modal fade" id="imageAdditionModal" tabindex="-1" aria-labelledby="imageAdditionModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -61,7 +54,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" action="/add_images_route">
+                <form method="POST" enctype="multipart/form-data" action="/add_images">
                     <div class="mb-3">
                         <input type="file" class="form-control" name="newImage" multiple>
                     </div>
@@ -77,6 +70,14 @@
     </div>
 </div>
 
+<script>
+    $('#imageAdditionModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget); // Button that triggered the modal
+        const entryId = button.data('entry-id'); // Extract the entry_id from the data-entry-id attribute
+        const modal = $(this);
+        modal.find('input[name="entry_id"]').val(entryId);
+    });
+</script>
 
 
 

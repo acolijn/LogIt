@@ -3,7 +3,7 @@
         <th></th>
         <th>Entry</th>
         <th>Keywords</th>
-        <th>Image</th>
+        <th></th>
         <th></th>
     </tr>
 </thead>
@@ -32,13 +32,12 @@
 
                 <!-- The "Upload Images" button that triggers the modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageUploadModal">
-                    Upload File(s)
+                    Select File(s)
                 </button>
 
                 <!-- A hidden file input in the main form to store selected images -->
                 <input type="file" class="form-control" id="mainFileInput" name="image" multiple style="display: none;">
                 <div id="selectedFilesList"></div>
-
 
                 </div>
             </td>
@@ -54,7 +53,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-        console.log("doing get keywords");
+        // Fetch the keywords from the server and populate the dropdown
         fetch("/get-keywords")
             .then(response => response.json())
             .then(data => {
