@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .plot-container {
+    width: 98%;  /* or whatever width makes sense for your layout */
+    }
+</style>
+
+<body>
+    <div class="card mb-4">
+        <div class="card-header">
+            Last Measured Values: <strong>{{ latest_values.timestamp[0] }} </strong> 
+        </div>
+        <div class="card-body">
+            <div class="row flex-nowrap"> <!-- Add flex-nowrap here -->
+                {% for key, (value, unit) in latest_values.items() %}
+                    {% if key != 'timestamp' %}
+            
+                        <div class="col d-flex justify-content-between"> <!-- Adjust column class here -->
+                            <strong>{{ key }}:</strong>
+                            <span>{{ value }} {{ unit }}</span>
+                        </div>
+                        {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+<div class="plot-container">{{ plot_temp1|safe }}</div>
+<div class="plot-container">{{ plot_pressure1|safe }}</div>
+<div class="plot-container">{{ plot_pump1|safe }}</div>
+
+
+
+</body>
+
+</html>
+
+{% endblock %}
