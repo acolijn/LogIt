@@ -482,10 +482,14 @@ def plot_view():
     pressures = ["PT101", "PT102", "PT103", "PT104", "PT201"]  # Add as many as you need
     pressures_plot = make_plot(pressures, plot_title="Pressure", yaxis_title="Pressure (bar)")
 
-    # dDefine the pump plots you are interested in
+    # Define the pump plots you are interested in
     pump = ["TT301","TT302","TT103","TT104","FM101"]
     pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / Flow (g/min)")
 
+    # define
+    hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS"]
+    hv_plot = make_plot(hv, plot_title="High Voltage", yaxis_title="HV (V)")
+	
     # get the last values from the database for a few selected sensors
     latest_data = mongo.db.slow_control_data.find_one(sort=[('timestamp', -1)])
 
@@ -499,6 +503,7 @@ def plot_view():
                            plot_temp1=temperature_in_cryostat_plot, 
                            plot_pressure1=pressures_plot,
                            plot_pump1=pump_plot,
+                           plot_hv1=hv_plot,
                            latest_values=latest_values_with_units)
 
 @login_required
@@ -541,16 +546,18 @@ def make_plot(sensors, plot_title, yaxis_title):
     ]
 
     # plot layout
+
+    
     layout = go.Layout(
         title=plot_title,
-        xaxis=dict(title='Time'),
+        #xaxis=dict(title='Time'),
         yaxis=dict(title=yaxis_title),
         height=250,
         margin=go.layout.Margin(
             l=50,  # Left margin
             r=50,  # Right margin
-            b=25,  # Bottom margin
-            t=25,  # Top margin
+            b=0,  # Bottom margin
+            t=30,  # Top margin
             pad=4  # Sets the amount of padding (in px) between the plotting area and the axis lines
         )
     )
