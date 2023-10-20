@@ -467,6 +467,13 @@ def get_entry_keywords(entry_id):
 @login_required
 def plot_view():
 
+    # get the name of the logbook from the session
+    logbook_id = ObjectId(session['logbook'])
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})['name']
+    if logbook != 'xams':
+        # no permission to view this page
+        return redirect(url_for('main.show_entries'))
+
     # Define the temperature sensors you're interested in
     temperature_in_cryostat = ["TT201", "TT202", "TT203", "TT204", "TT205", "TT206", "TT207", "TT401", "TT402"]  # Add as many as you need
     temperature_in_cryostat_plot = make_plot(temperature_in_cryostat, plot_title="Temperature", yaxis_title="Temperature (C)")
