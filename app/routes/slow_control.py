@@ -101,8 +101,8 @@ def make_plot(sensors, plot_title, yaxis_title):
         height=250,
         margin=go.layout.Margin(
             l=100,  # Left margin
-            r=300,  # Right margin
-            b=0,  # Bottom margin
+            r=175,  # Right margin
+            b=10,  # Bottom margin
             t=30,  # Top margin
             pad=4  # Sets the amount of padding (in px) between the plotting area and the axis lines
         )
