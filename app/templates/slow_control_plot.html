@@ -29,13 +29,54 @@ html {
     </div>
 
 
-<div class="plot-container">{{ plot_temp1|safe }}</div>
-<div class="plot-container">{{ plot_pressure1|safe }}</div>
-<div class="plot-container">{{ plot_pump1|safe }}</div>
-<div class="plot-container">{{ plot_hv1|safe }}</div>
+<div id="plot1" class="plot-container">{{ plot_temp1|safe }}</div>
+<div id="plot2" class="plot-container">{{ plot_pressure1|safe }}</div>
+<div id="plot3" class="plot-container">{{ plot_pump1|safe }}</div>
+<div id="plot4" class="plot-container">{{ plot_hv1|safe }}</div>
 
 </body>
 
+
+<script>
+    var plots = ['plot1', 'plot2', 'plot3', 'plot4'];
+    var updating = false;  // flag to check if an update operation is in progress
+
+    plots.forEach(function (plotId) {
+        var plotContainer = document.getElementById(plotId);
+        var plotDiv = plotContainer.querySelector('.plotly-graph-div');
+
+        plotDiv.on('plotly_relayout', function (data) {
+            if (updating) return;  // if an update is already in progress, skip
+
+            if (data['xaxis.range[0]'] && data['xaxis.range[1]']) {
+                var newRange = [data['xaxis.range[0]'], data['xaxis.range[1]']];
+                updating = true;  // set flag indicating update is in progress
+                plots.forEach(function (innerPlotId) {
+                    if (innerPlotId !== plotId) {
+                        var actualPlotDiv = document.querySelector("#" + innerPlotId + " .plotly-graph-div");
+                        Plotly.relayout(actualPlotDiv, { 'xaxis.range': newRange });
+                    }
+                });
+                updating = false;  // reset the flag once done
+            }
+        });
+
+        plotDiv.on('plotly_doubleclick', function () {
+            plots.forEach(function (innerPlotId) {
+                var innerPlotDiv = document.querySelector("#" + innerPlotId + " .plotly-graph-div");
+                Plotly.relayout(innerPlotDiv, {
+                    'xaxis.autorange': true,
+                    'yaxis.autorange': true
+                });
+            });
+        });
+    });
+
+
+</script>
+
 </html>
+
+
 
 {% endblock %}
