@@ -29,7 +29,7 @@ html {
     </div>
 
 
-<div id="plot1" class="plot-container">{{ plot_temp1|safe }}</div>
+<div id="plot1" data-plotname="temperature" class="plot-container">{{ plot_temp1|safe }}</div>
 <div id="plot2" class="plot-container">{{ plot_pressure1|safe }}</div>
 <div id="plot3" class="plot-container">{{ plot_pump1|safe }}</div>
 <div id="plot4" class="plot-container">{{ plot_hv1|safe }}</div>
@@ -71,6 +71,67 @@ html {
             });
         });
     });
+
+    var customButton = {
+            name: 'downloadPlot',
+            title: 'Download plot as image',
+            icon: Plotly.Icons.camera,  // Use the camera icon from Plotly's set
+            click: function (gd) {
+                var fileName = '';  // You can generate your custom file name here
+                switch (gd.id) {
+                    case 'plot1':
+                        fileName = 'temperature_' + new Date().toISOString() + '.png';
+                        break;
+                    case 'plot2':
+                        fileName = 'pressure_' + new Date().toISOString() + '.png';
+                        break;
+                    // ... add other cases as needed
+                }
+                Plotly.downloadImage(gd, { filename: fileName });
+            }
+        };
+
+
+    // Define the custom button outside of the function
+    var customButton = {
+        name: 'downloadPlot',
+        title: 'Download plot as image',
+        icon: Plotly.Icons.camera,
+        click: function (gd) {
+            var parentID = gd.parentElement.id;  // Use the parent element's ID
+            var fileName = '';
+            switch (parentID) {
+                case 'plot1':
+                    fileName = 'temperature_' + new Date().toISOString() + '.png';
+                    break;
+                case 'plot2':
+                    fileName = 'pressure_' + new Date().toISOString() + '.png';
+                    break;
+                // ... add other cases as needed
+            }
+            Plotly.downloadImage(gd, { filename: fileName });
+        }
+    };
+
+    function customizeDownloadButton() {
+        var plots = ['plot1', 'plot2', 'plot3', 'plot4'];
+
+        plots.forEach(function (plotId) {
+            var plotDiv = document.querySelector("#" + plotId + " .plotly-graph-div");
+
+            // Just to ensure each plotDiv is selected correctly
+            console.log('Selected Plot: ', plotId, plotDiv);
+
+            // Add custom button
+            Plotly.relayout(plotDiv, {
+                'modeBarButtonsToAdd': [customButton]
+            });
+        });
+    }
+
+    // Call this function once your plots are rendered.
+    customizeDownloadButton();
+
 
 
 </script>
