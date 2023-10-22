@@ -161,28 +161,19 @@ def add_images():
     if not logbook:
         return redirect(url_for('main.show_entries', error="Logbook not found"))
 
-    logbook_name = logbook['name']  # Assuming the logbook has a 'name' field
-
     # Handle image upload
-    new_image_filenames = []
-
+    image_filenames = []
     if 'newImage' in request.files:
-        images = request.files.getlist('newImage')  # Get list of uploaded images
-        for image in images:
-            if image and allowed_file(image.filename):
-                filename = os.path.join(logbook_name, image.filename)  
-                full_path = os.path.join(UPLOAD_FOLDER, logbook_name, image.filename)
-                try:
-                    image.save(full_path)
-                    new_image_filenames.append(filename)
-                except Exception as e:
-                    print(f"Error saving image: {e}")
+         images = request.files.getlist('newImage')  # Get list of uploaded images
+         image_filenames = [save_image(image) for image in images if image]
+         image_filenames = [filename for filename in image_filenames if filename]  # Filter out None values
 
     # Update the entry in MongoDB with new images
-    if new_image_filenames:
+
+    if image_filenames:
         mongo.db.entries.update_one(
             {"_id": ObjectId(entry_id)},
-            {"$push": {"images": {"$each": new_image_filenames}}}
+            {"$push": {"images": {"$each": image_filenames}}}
         )
 
     return redirect(url_for('main.show_entries'))
