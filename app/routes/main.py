@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify, session
 from flask_login import login_required, current_user
@@ -64,6 +65,41 @@ def timeline():
     
     return jsonify(dates=dates, counts=counts)
 
+@main.route('/save_image')
+@login_required
+def save_image(image):
+    """Save an image to the filesystem.	
+
+    Args:
+        image (FileStorage): The image to save.
+
+    Returns:
+        str: The filename of the saved image.
+
+    """
+    # get the name of the logbook from the session
+    logbook_id = ObjectId(session['logbook'])
+    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
+
+    if image and allowed_file(image.filename):
+        # Generate a unique filename using UUID and a timestamp
+        unique_filename = f"{uuid.uuid4()}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{secure_filename(image.filename)}"
+        print('filename =',unique_filename)
+        print('logbook name = ', logbook['name'])
+
+        full_path = os.path.join(UPLOAD_FOLDER, logbook['name'], unique_filename)
+        find_path = os.path.join(logbook['name'], unique_filename)
+        # full_path = os.path.join(logbook['name'], unique_filename)
+        
+        try:
+            image.save(full_path)
+            return find_path
+        except Exception as e:
+            print(f"Error saving image: {e}")
+            return None
+    else:
+        print("Image is not allowed or no image received")
+        return None
 
 @main.route('/add-entry', methods=['POST'])
 @login_required
@@ -74,10 +110,6 @@ def handle_entry():
         HTML page -- The add entry form.
 
     """
-    # get the name of the logbook from the session
-    logbook_id = ObjectId(session['logbook'])
-    logbook = mongo.db.logbooks.find_one({"_id": logbook_id})
-
     # Extract data from form
     print("handle_entry")
     text = request.form['text']
@@ -85,28 +117,13 @@ def handle_entry():
 
     # Handle image upload
     print('static folder = ', current_app.static_folder )   
-
     image_filenames = []
-
-    print("request.files = ", request.files)
 
     if 'image' in request.files:
         images = request.files.getlist('image')  # Get list of uploaded images
-        print("images = ", images)
-        for image in images:
-            if image and allowed_file(image.filename):
-                filename = os.path.join(logbook['name'], image.filename)
-                full_path = os.path.join(UPLOAD_FOLDER, logbook['name'], image.filename)
-                try:
-                    image.save(full_path)
-                    image_filenames.append(filename)
-                except Exception as e:
-                    print(f"Error saving image: {e}")
-            else:
-                print("Image is not allowed or no image received")
+        image_filenames = [save_image(image) for image in images if image]
+        image_filenames = [filename for filename in image_filenames if filename]  # Filter out None values
 
-
-    
     # Store the data in MongoDB
     entry = {
         "timestamp": datetime.utcnow(),
