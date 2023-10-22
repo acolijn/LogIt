@@ -6,6 +6,9 @@ from app import mongo
 
 import plotly.graph_objects as go
 from plotly.offline import plot
+import plotly.io as pio
+import json
+
 
 slow_control = Blueprint('slow_control', __name__)
 
@@ -45,6 +48,8 @@ def plot_view():
     
     latest_values_with_units = {var: (latest_data[var], unit) for var, unit in zip(selected_variables, selected_variables_units)}
 
+
+    #return render_template('slow_control_plot.html', 
     return render_template('slow_control_plot.html', 
                            plot_temp1=temperature_in_cryostat_plot, 
                            plot_pressure1=pressures_plot,
@@ -92,8 +97,6 @@ def make_plot(sensors, plot_title, yaxis_title):
     ]
 
     # plot layout
-
-    
     layout = go.Layout(
         title=plot_title,
         #xaxis=dict(title='Time'),
@@ -111,6 +114,6 @@ def make_plot(sensors, plot_title, yaxis_title):
     fig = go.Figure(data=traces, layout=layout)
     fig.update_layout(autosize=True)
 
-    plot_div = plot(fig, output_type='div')
+    return json.loads(fig.to_json())
 
-    return plot_div
+

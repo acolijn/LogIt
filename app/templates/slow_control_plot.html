@@ -3,141 +3,127 @@
 {% block content %}
 
 <style>
-html {
-    overflow-y: scroll;
-}
+    html {
+        overflow-y: scroll;
+    }
 </style>
+
+<!-- Include the plots -->
 
 <body>
     <div class="card mb-4">
         <div class="card-header">
-            Last Measured Values: <strong>{{ latest_values.timestamp[0] }} </strong> 
+            Last Measured Values: <strong>{{ latest_values.timestamp[0] }} </strong>
         </div>
         <div class="card-body">
             <div class="row flex-nowrap"> <!-- Add flex-nowrap here -->
                 {% for key, (value, unit) in latest_values.items() %}
-                    {% if key != 'timestamp' %}
-            
-                        <div class="col d-flex justify-content-between"> <!-- Adjust column class here -->
-                            <strong>{{ key }}:</strong>
-                            <span>{{ value }} {{ unit }}</span>
-                        </div>
-                        {% endif %}
+                {% if key != 'timestamp' %}
+
+                <div class="col d-flex justify-content-between"> <!-- Adjust column class here -->
+                    <strong>{{ key }}:</strong>
+                    <span>{{ value }} {{ unit }}</span>
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
     </div>
 
-
-<div id="plot1" data-plotname="temperature" class="plot-container">{{ plot_temp1|safe }}</div>
-<div id="plot2" class="plot-container">{{ plot_pressure1|safe }}</div>
-<div id="plot3" class="plot-container">{{ plot_pump1|safe }}</div>
-<div id="plot4" class="plot-container">{{ plot_hv1|safe }}</div>
-
+    <div id="plot1"> </div>
+    <div id="plot2"> </div>
+    <div id="plot3"> </div>
+    <div id="plot4"> </div>
 </body>
 
-
 <script>
-    var plots = ['plot1', 'plot2', 'plot3', 'plot4'];
-    var updating = false;  // flag to check if an update operation is in progress
 
-    plots.forEach(function (plotId) {
-        var plotContainer = document.getElementById(plotId);
-        var plotDiv = plotContainer.querySelector('.plotly-graph-div');
+    var modeBarButtonsToRemove = ['toImage'];
 
-        plotDiv.on('plotly_relayout', function (data) {
-            if (updating) return;  // if an update is already in progress, skip
+    document.addEventListener('DOMContentLoaded', function () {
+        var plots = [
+            { id: 'plot1', config: '{{ plot_temp1| tojson |safe }}' },
+            { id: 'plot2', config: '{{ plot_pressure1| tojson |safe }}' },
+            { id: 'plot3', config: '{{ plot_pump1| tojson |safe }}' },
+            { id: 'plot4', config: '{{ plot_hv1| tojson |safe }}' },
+        ];
 
-            if (data['xaxis.range[0]'] && data['xaxis.range[1]']) {
-                var newRange = [data['xaxis.range[0]'], data['xaxis.range[1]']];
-                updating = true;  // set flag indicating update is in progress
-                plots.forEach(function (innerPlotId) {
-                    if (innerPlotId !== plotId) {
-                        var actualPlotDiv = document.querySelector("#" + innerPlotId + " .plotly-graph-div");
-                        Plotly.relayout(actualPlotDiv, { 'xaxis.range': newRange });
+        var updating = false;  // flag to check if an update operation is in progress
+        plots.forEach(function (plot) {
+            // Create a new plot
+            var gd = document.getElementById(plot.id);
+            var config = JSON.parse(plot.config);
+
+            // Add a custom button to the modebar
+            var customSaveButton = {
+                // Add the title and icon for the custom button
+                name: 'Download plot',
+                icon: Plotly.Icons.camera,
+                direction: 'up',
+                click: function (gd) {
+                    var format = 'png';
+                    var currentDate = new Date();
+                    var datetime = currentDate.toISOString().replace(/:/g, '-').replace(/\./g, '-');
+                    var vname = '';
+                    if (plot.id == 'plot1') {
+                        vname = 'temperature_';
+                    } else if (plot.id == 'plot2') {
+                        vname = 'pressure_';
+                    } else if (plot.id == 'plot3') {
+                        vname = 'pump_';
+                    } else if (plot.id == 'plot4') {
+                        vname = 'hv_';
                     }
-                });
-                updating = false;  // reset the flag once done
-            }
-        });
+                    var filename = vname + datetime;
 
-        plotDiv.on('plotly_doubleclick', function () {
-            plots.forEach(function (innerPlotId) {
-                var innerPlotDiv = document.querySelector("#" + innerPlotId + " .plotly-graph-div");
-                Plotly.relayout(innerPlotDiv, {
-                    'xaxis.autorange': true,
-                    'yaxis.autorange': true
+                    Plotly.downloadImage(gd, {
+                        format: format,
+                        filename: filename,
+                        height: 500,
+                        width: 700,
+                        scale: 1
+                    });
+                }
+            };
+            // Add the new button to the modebar buttons array, as well as the buttons to remove
+            Plotly.newPlot(gd, config.data, config.layout, {
+                modeBarButtonsToAdd: [customSaveButton],
+                modeBarButtonsToRemove: modeBarButtonsToRemove
+            })
+                .then(function (gd) {
+                    // Once the plot is initialized, register a plotly_relayout event handler
+                    gd.on('plotly_relayout', function (eventData) {
+                        if (updating) return;  // if an update is already in progress, skip
+                        // You can now handle the zoom (or other relayout) event here
+                        if (eventData['xaxis.range[0]'] && eventData['xaxis.range[1]']) {
+                            var newRange = [eventData['xaxis.range[0]'], eventData['xaxis.range[1]']];
+                            updating = true;  // set flag indicating update is in progress
+                            plots.forEach(function (innerPlot) {
+                                if (innerPlot.id !== plot.id) {
+                                    var actualPlotDiv = document.getElementById(innerPlot.id);
+                                    Plotly.relayout(actualPlotDiv, { 'xaxis.range': newRange });
+                                }
+                            });
+                            updating = false;  // reset the flag once done
+                        }
+                    });
+                    // Double-click handler
+                    gd.on('plotly_doubleclick', function () {
+                        plots.forEach(function (innerPlot) {
+                            var innerPlotDiv = document.getElementById(innerPlot.id);
+                            Plotly.relayout(innerPlotDiv, {
+                                'xaxis.autorange': true,
+                                'yaxis.autorange': true
+                            });
+                        });
+                    });
                 });
-            });
         });
     });
 
-    var customButton = {
-            name: 'downloadPlot',
-            title: 'Download plot as image',
-            icon: Plotly.Icons.camera,  // Use the camera icon from Plotly's set
-            click: function (gd) {
-                var fileName = '';  // You can generate your custom file name here
-                switch (gd.id) {
-                    case 'plot1':
-                        fileName = 'temperature_' + new Date().toISOString() + '.png';
-                        break;
-                    case 'plot2':
-                        fileName = 'pressure_' + new Date().toISOString() + '.png';
-                        break;
-                    // ... add other cases as needed
-                }
-                Plotly.downloadImage(gd, { filename: fileName });
-            }
-        };
-
-
-    // Define the custom button outside of the function
-    var customButton = {
-        name: 'downloadPlot',
-        title: 'Download plot as image',
-        icon: Plotly.Icons.camera,
-        click: function (gd) {
-            var parentID = gd.parentElement.id;  // Use the parent element's ID
-            var fileName = '';
-            switch (parentID) {
-                case 'plot1':
-                    fileName = 'temperature_' + new Date().toISOString() + '.png';
-                    break;
-                case 'plot2':
-                    fileName = 'pressure_' + new Date().toISOString() + '.png';
-                    break;
-                // ... add other cases as needed
-            }
-            Plotly.downloadImage(gd, { filename: fileName });
-        }
-    };
-
-    function customizeDownloadButton() {
-        var plots = ['plot1', 'plot2', 'plot3', 'plot4'];
-
-        plots.forEach(function (plotId) {
-            var plotDiv = document.querySelector("#" + plotId + " .plotly-graph-div");
-
-            // Just to ensure each plotDiv is selected correctly
-            console.log('Selected Plot: ', plotId, plotDiv);
-
-            // Add custom button
-            Plotly.relayout(plotDiv, {
-                'modeBarButtonsToAdd': [customButton]
-            });
-        });
-    }
-
-    // Call this function once your plots are rendered.
-    customizeDownloadButton();
-
-
-
 </script>
 
+
 </html>
-
-
 
 {% endblock %}
