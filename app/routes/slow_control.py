@@ -9,7 +9,6 @@ from plotly.offline import plot
 import plotly.io as pio
 import json
 
-
 slow_control = Blueprint('slow_control', __name__)
 
 @slow_control.route('/plot/')
@@ -36,7 +35,7 @@ def plot_view():
     pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / Flow (g/min)")
 
     # define
-    hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS"]
+    hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS", "I_PMT_TOP", "I_PMT_BOT"]
     hv_plot = make_plot(hv, plot_title="High Voltage", yaxis_title="HV (V)")
 	
     # get the last values from the database for a few selected sensors
@@ -46,8 +45,8 @@ def plot_view():
     selected_variables = ['timestamp', 'PT201', 'TT401', 'TT201', 'TT202', 'FM101']  # add your variables here
     selected_variables_units = ['','bar', 'C', 'C', 'C', 'g/min']
     
+    # Create a dictionary with the last measured values and their units
     latest_values_with_units = {var: (latest_data[var], unit) for var, unit in zip(selected_variables, selected_variables_units)}
-
 
     #return render_template('slow_control_plot.html', 
     return render_template('slow_control_plot.html', 
@@ -77,13 +76,18 @@ def make_plot(sensors, plot_title, yaxis_title):
 
     timestamps = []
 
+    # Loop over the cursor and extract the data
     for doc in cursor:
+        # Append the timestamp to the list
         timestamps.append(doc['timestamp'])
-        
+        # Loop over the sensors
         for sensor in sensors:
+            # Check if the sensor is in the document
             if sensor in doc:
+                # Append the value to the list
                 sensor_data[sensor].append(doc[sensor])
             else:
+                # Append a zero if the sensor is not in the document
                 sensor_data[sensor].append(0)
 
     # Create traces for each sensor
@@ -111,9 +115,11 @@ def make_plot(sensors, plot_title, yaxis_title):
         )
     )
 
+    # Create the figure
     fig = go.Figure(data=traces, layout=layout)
     fig.update_layout(autosize=True)
 
+    # Convert the figure to JSON
     return json.loads(fig.to_json())
 
-
+# 
