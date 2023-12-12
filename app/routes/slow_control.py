@@ -23,7 +23,7 @@ def plot_view():
         return redirect(url_for('main.show_entries'))
 
     # Define the temperature sensors you're interested in
-    temperature_in_cryostat = ["TT201", "TT202", "TT203", "TT204", "TT205", "TT206", "TT207", "TT401", "TT402"]  # Add as many as you need
+    temperature_in_cryostat = ["TT201", "TT202", "TT203", "TT204", "TT205", "TT206", "TT207", "TT401", "TT402", "TT303", "TT304"]  # Add as many as you need
     temperature_in_cryostat_plot = make_plot(temperature_in_cryostat, plot_title="Temperature", yaxis_title="Temperature (C)")
 
     # Define the pressure sensors you're interested in
