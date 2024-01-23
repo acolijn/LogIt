@@ -12,4 +12,4 @@ class Config:
     ENV = 'development'	
     DEBUG = True
     MONGO_URI = secrets.get('MONGO_URI')
-    SECRET_KEY = secrets.get('SECRET_KEY')
+    SECRET_KEY = secrets.get('SECRET_KEY') 
