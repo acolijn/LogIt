@@ -4,7 +4,8 @@
         <div class="col">
             <label for="search-term" class="form-label">Text search:</label>
             <input type="text" id="search-term" name="search_term" class="form-control" placeholder="Search Entries"
-                value="{{ search_term|default('', true) }}">
+             value = "{{ request.args.get('search_term', '') }}">
+             <!--  value="{{ search_term|default('', true) }}"> -->
         </div>
         <div class="col">
             <label for="keyword-filter" class="form-label">Keyword:</label>
