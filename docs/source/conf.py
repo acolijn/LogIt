@@ -30,7 +30,20 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 autodoc_inherit_docstrings = True
-autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask', 'flask_login', 'pymongo', 'werkzeug', 'werkzeug.security', 'getpass', 'plotly', 'dash', 'dash_core_components', 'dash_html_components', 'dash.dependencies']
+# Default autodoc options
+autodoc_default_options = {
+    'members': True,  # Document all functions
+    'undoc-members': True,  # Document even if some members don’t have docstrings
+    'show-inheritance': True,  # Show class inheritance
+    'private-members': False,  # Document only public members
+    'special-members': False,
+    'exclude-members': '__weakref__'
+}
+
+viewcode_import = True
+
+#autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask', 'flask_login', 'pymongo', 'werkzeug', 'werkzeug.security', 'getpass', 'plotly', 'dash', 'dash_core_components', 'dash_html_components', 'dash.dependencies']
+autodoc_mock_imports = ['pandas', 'flask', 'pymongo', 'shutil', 'plotly']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
