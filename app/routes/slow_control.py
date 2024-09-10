@@ -14,6 +14,19 @@ slow_control = Blueprint('slow_control', __name__)
 @slow_control.route('/plot/')
 @login_required
 def plot_view():
+    """
+    Renders the slow control plot view for the logbook 'xams'.
+    This function performs the following tasks:
+    1. Retrieves the logbook name from the session and checks if the user has permission to view the page.
+    2. Defines the temperature, pressure, pump, and high voltage sensors of interest.
+    3. Generates plots for the defined sensors using the `make_plot` function.
+    4. Retrieves the latest data from the database for selected sensors.
+    5. Extracts the last measured values of the selected variables and their units.
+    6. Renders the 'slow_control_plot.html' template with the generated plots and latest values.
+    Returns:
+        A rendered template for the slow control plot view if the user has permission, 
+        otherwise redirects to the main entries page.
+    """
 
     # get the name of the logbook from the session
     logbook_id = ObjectId(session['logbook'])

@@ -3,3 +3,4 @@ secrets/
 migrate.py
 setup.py
 logit_db_20240123.tar
+logit_db_20240910.tar
