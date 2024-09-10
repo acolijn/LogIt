@@ -18,6 +18,7 @@ build:
 python:
   install:
     - method: pip
+      path .
     - requirements: docs/requirements.txt
 
 # Read the Docs will automatically handle the Sphinx build
