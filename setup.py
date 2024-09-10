@@ -2,6 +2,16 @@ from app import create_app, mongo
 from werkzeug.security import generate_password_hash
 import getpass
 
+from setuptools import setup
+
+setup(
+    install_requires=[
+        'Flask',
+        'pymongo',
+        # Other dependencies
+    ],
+)
+
 def create_admin():
     username = input("Enter admin username: ")
     password = getpass.getpass("Enter admin password: ")
