@@ -1,26 +1,10 @@
-# .readthedocs.yaml
 version: 2
 
-# Set the OS, Python version, and other tools you might need
 build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  #apt_packages:
-  #
-  #  - doxygen
-  # Optionally run Doxygen before Sphinx
-  #commands:
-  # - mkdir -p $READTHEDOCS_OUTPUT/html/
-  #  - mkdir -p docs/doxygen_output
-  #  - doxygen docs/Doxyfile
 
 python:
   install:
-    - method: pip
-      path .
-    - requirements: docs/requirements.txt
-
-# Read the Docs will automatically handle the Sphinx build
-sphinx:
-  configuration: docs/source/conf.py
+    - requirements: docs/requirements.txt  # Remove the path: . installation to avoid circular installation
