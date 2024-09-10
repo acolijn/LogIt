@@ -7,3 +7,4 @@ setup.py
 logit_db_20240123.tar
 logit_db_20240910.tar
 docs/source/__pycache__/
+app/routes/__pycache__/slow_control.cpython-311.pyc

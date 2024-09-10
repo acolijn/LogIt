@@ -43,7 +43,7 @@ autodoc_default_options = {
 viewcode_import = True
 
 #autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask', 'flask_login', 'pymongo', 'werkzeug', 'werkzeug.security', 'getpass', 'plotly', 'dash', 'dash_core_components', 'dash_html_components', 'dash.dependencies']
-autodoc_mock_imports = ['pandas', 'flask', 'pymongo', 'shutil', 'plotly']
+autodoc_mock_imports = ['pandas', 'pymongo', 'shutil', 'plotly', 'app']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
