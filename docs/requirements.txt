@@ -2,6 +2,8 @@ pandas
 uproot
 matplotlib
 numpy
+Flask
+pymongo
 sphinx
 sphinx-rtd-theme
 -e .
