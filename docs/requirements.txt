@@ -35,4 +35,6 @@ webencodings==0.5.1
 Werkzeug==2.3.7
 WTForms==3.0.1
 zipp==3.17.0
+sphinx
+sphinx-rtd-theme
 -e .
