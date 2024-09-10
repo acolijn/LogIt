@@ -29,7 +29,7 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask']
+autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask', 'Flask', 'pymongo', 'werkzeug', 'werkzeug.security', 'getpass', 'plotly', 'dash', 'dash_core_components', 'dash_html_components', 'dash.dependencies']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
