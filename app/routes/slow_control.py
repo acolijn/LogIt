@@ -17,12 +17,19 @@ def plot_view():
     """
     Renders the slow control plot view for the logbook.
     This function performs the following tasks:
+
     1. Retrieves the logbook name from the session and checks if the user has permission to view the page.
+    
     2. Defines the temperature sensors, pressure sensors, pump sensors, and high voltage sensors to be plotted.
+    
     3. Generates plots for the defined sensors using the `make_plot` function.
+    
     4. Retrieves the latest data from the database for selected sensors.
+    
     5. Extracts the last measured values of the selected variables and their units.
+    
     6. Renders the 'slow_control_plot.html' template with the generated plots and latest values.
+    
     Returns:
         A rendered HTML template for the slow control plot view.
     """
