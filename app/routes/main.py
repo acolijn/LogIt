@@ -41,6 +41,12 @@ def add_entry_form():
 @main.route('/dbactivity.html')
 @login_required
 def db_activity():
+    """
+    Renders the 'dbactivity.html' template.
+
+    Returns:
+        Response: A Flask response object that renders the 'dbactivity.html' template.
+    """
     return render_template('dbactivity.html')
 
 @main.route('/timeline')
@@ -143,7 +149,18 @@ def handle_entry():
 @main.route('/add_images', methods=['POST'])
 @login_required
 def add_images():
-    """Handle the addition of more images to an existing entry."""
+    """
+    Handles the addition of images to an existing entry in the database.
+    This function performs the following steps:
+    1. Retrieves the entry ID from the form data.
+    2. Checks if the entry exists in the database.
+    3. Fetches the associated logbook document using the entry's logbook ID.
+    4. Handles the image upload process, saving the images and collecting their filenames.
+    5. Updates the entry in the database with the new image filenames.
+    6. Redirects to the entries display page, with appropriate error messages if necessary.
+    Returns:
+        A redirect response to the entries display page, with error messages if the entry or logbook is not found.
+    """
     
     # Retrieve entry_id from form
     entry_id = request.form['entry_id']
@@ -346,6 +363,15 @@ def get_keywords():
 @main.route('/calendar')
 @login_required
 def calendar_view():
+    """
+    Renders the calendar view template with the current date.
+
+    This function retrieves the current date, formats it as 'YYYY-MM-DD',
+    and passes it to the 'show_calendar.html' template for rendering.
+
+    Returns:
+        str: The rendered HTML content for the calendar view.
+    """
     today = datetime.today().strftime('%Y-%m-%d')
     return render_template('show_calendar.html', today=today)
 
@@ -416,8 +442,18 @@ from bson import ObjectId  # Importing ObjectId from bson
 @main.route('/update_entry/<string:entry_id>', methods=['POST'])
 @login_required
 def update_entry(entry_id):
-    """Update an entry in the database.
     """
+    Update the text of an existing entry in the database.
+    Args:
+        entry_id (str): The ID of the entry to be updated.
+    Returns:
+        Response: A JSON response indicating the success or failure of the update operation.
+            - If the entry ID is invalid, returns a 400 status with an error message.
+            - If the entry is not found, returns a 404 status with an error message.
+            - If the update is successful, returns a 200 status with a success message.
+            - If the update fails, returns a 400 status with an error message.
+    """
+
     data = request.json
     updated_text = data.get('updated_text')
 
@@ -440,6 +476,16 @@ def update_entry(entry_id):
 @main.route('/update-entry-keywords/<string:entry_id>', methods=['POST'])
 @login_required
 def update_entry_keywords(entry_id):
+    """
+    Update the keywords of a specific entry in the database.
+    Args:
+        entry_id (str): The ID of the entry to update.
+    Returns:
+        Response: A JSON response indicating success or failure.
+            - If the entry ID is invalid, returns a JSON response with success=False and an error message, with a 400 status code.
+            - If the update is successful, returns a JSON response with success=True and a 200 status code.
+            - If the update fails, returns a JSON response with success=False and an error message, with a 400 status code.
+    """
     if not ObjectId.is_valid(entry_id):
         return jsonify(success=False, error="Invalid Entry ID"), 400
     
@@ -456,6 +502,16 @@ def update_entry_keywords(entry_id):
 @main.route('/get-entry-keywords/<string:entry_id>', methods=['GET'])
 @login_required
 def get_entry_keywords(entry_id):
+    """
+    Retrieve the keywords associated with a specific entry.
+    Args:
+        entry_id (str): The ID of the entry to retrieve keywords for.
+    Returns:
+        Response: A JSON response containing the keywords if the entry is found,
+                  or an error message if the entry ID is invalid or the entry is not found.
+                  The response status code is 200 on success, 400 if the entry ID is invalid,
+                  and 404 if the entry is not found.
+    """
     if not ObjectId.is_valid(entry_id):
         return jsonify(success=False, error="Invalid Entry ID"), 400
     
