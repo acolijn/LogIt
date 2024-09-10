@@ -2,14 +2,13 @@ from app import create_app, mongo
 from werkzeug.security import generate_password_hash
 import getpass
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    install_requires=[
-        'Flask',
-        'pymongo',
-        # Other dependencies
-    ],
+    name='LogIt',
+    version='0.1',
+    packages=find_packages(where='app/routes'),
+    package_dir={'': 'app/routes'},  # This tells it that the packages are in src/
 )
 
 def create_admin():
