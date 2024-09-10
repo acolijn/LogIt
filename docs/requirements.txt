@@ -1,0 +1,8 @@
+pandas
+uproot
+matplotlib
+numpy
+flask
+sphinx
+sphinx-rtd-theme
+-e .
