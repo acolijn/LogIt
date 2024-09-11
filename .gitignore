@@ -8,3 +8,4 @@ logit_db_20240123.tar
 logit_db_20240910.tar
 docs/source/__pycache__/
 app/routes/__pycache__/slow_control.cpython-311.pyc
+app/routes/__pycache__/main.cpython-311.pyc
