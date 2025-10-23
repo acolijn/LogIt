@@ -51,8 +51,8 @@ def plot_view():
     pressures_plot = make_plot(pressures, plot_title="Pressure", yaxis_title="Pressure (bar)")
 
     # Define the pump plots you are interested in
-    pump = ["TT301","TT302","TT103","TT104","FM101"]
-    pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / Flow (g/min)")
+    pump = ["TT301","TT302","TT103","TT104","FM101","PP401"]
+    pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / Flow (g/min) / %")
 
     # define
     hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS", "I_PMT_TOP", "I_PMT_BOT"]
@@ -98,6 +98,9 @@ def make_plot(sensors, plot_title, yaxis_title):
 
     # Loop over the cursor and extract the data
     for doc in cursor:
+        # Skip documents without a timestamp
+        if 'timestamp' not in doc:
+             continue
         # Append the timestamp to the list
         timestamps.append(doc['timestamp'])
         # Loop over the sensors
