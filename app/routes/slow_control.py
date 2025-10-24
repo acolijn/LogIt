@@ -108,6 +108,12 @@ def make_plot(sensors, plot_title, yaxis_title):
             # Check if the sensor is in the document
             if sensor in doc:
                 # Append the value to the list
+                if sensor == "PP401":
+                    # Convert heater power to Watts (the sensor measures voltage percentage of maximum value, the resistance is 31.0 Ohm and max voltage is 45.4 V)
+                    # P (W) = (PP401 * 45.4)^2 / 31.0
+                    value_in_watts = (doc[sensor] * 45.4)**2 / 31.0
+                    sensor_data[sensor].append(value_in_watts)
+                else:
                 sensor_data[sensor].append(doc[sensor])
             else:
                 # Append a zero if the sensor is not in the document
