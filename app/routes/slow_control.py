@@ -52,7 +52,7 @@ def plot_view():
 
     # Define the pump plots you are interested in
     pump = ["TT301","TT302","TT103","TT104","FM101","PP401"]
-    pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / Flow (g/min) / %")
+    pump_plot = make_plot(pump, plot_title="Pump", yaxis_title="Temperature (C) / F (g/min) / P(W)")
 
     # define
     hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS", "I_PMT_TOP", "I_PMT_BOT"]
