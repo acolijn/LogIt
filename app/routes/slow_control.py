@@ -114,7 +114,7 @@ def make_plot(sensors, plot_title, yaxis_title):
                     value_in_watts = (doc[sensor] * 45.4)**2 / 31.0
                     sensor_data[sensor].append(value_in_watts)
                 else:
-                sensor_data[sensor].append(doc[sensor])
+                    sensor_data[sensor].append(doc[sensor])
             else:
                 # Append a zero if the sensor is not in the document
                 sensor_data[sensor].append(0)
