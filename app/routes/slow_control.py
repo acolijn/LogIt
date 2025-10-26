@@ -44,6 +44,8 @@ def make_plot(sensors, plot_title, yaxis_title, hours=72):
             if getattr(ts, 'tzinfo', None) is None:
                 ts = ts.replace(tzinfo=timezone.utc)
             x.append(ts.isoformat().replace('+00:00', 'Z'))
+            if sensor == 'PP401':
+                val = (val*45.4/100.)**2/31.2  # convert power to W
             y.append(val)
             
         traces.append({

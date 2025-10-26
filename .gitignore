@@ -20,3 +20,4 @@ app/templates/__pycache__/*
 app/templates/slow_control_plot_old.html
 app/routes/__pycache__/slow_control.cpython-311.pyc
 app/routes/__pycache__/slow_control.cpython-311.pyc
+app/routes/__pycache__/slow_control.cpython-311.pyc
