@@ -12,3 +12,10 @@ app/routes/__pycache__/slow_control.cpython-311.pyc
 app/routes/__pycache__/main.cpython-311.pyc
 app/routes/__pycache__/calibration.cpython-311.pyc
 app/routes/__pycache__/data_acquisition.cpython-311.pyc
+app/routes/__pycache__/*
+app/routes/slow_control.pyc
+app/routes/main.pyc
+app/routes/slow_control_old.py
+app/templates/__pycache__/*
+app/templates/slow_control_plot_old.html
+app/routes/__pycache__/slow_control.cpython-311.pyc

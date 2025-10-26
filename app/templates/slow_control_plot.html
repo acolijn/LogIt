@@ -3,126 +3,189 @@
 {% block content %}
 
 <style>
-    html {
-        overflow-y: scroll;
-    }
+  html { overflow-y: scroll; }
 </style>
 
-<!-- Include the plots -->
-
 <body>
-    <div class="card mb-4">
-        <div class="card-header">
-            Last Measured Values: <strong>{{ latest_values.timestamp[0] }} </strong>
-        </div>
-        <div class="card-body">
-            <div class="row flex-nowrap"> <!-- Add flex-nowrap here -->
-                {% for key, (value, unit) in latest_values.items() %}
-                {% if key != 'timestamp' %}
-
-                <div class="col d-flex justify-content-between"> <!-- Adjust column class here -->
-                    <strong>{{ key }}:</strong>
-                    <span>{{ value }} {{ unit }}</span>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-        </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      Last Measured Values: <strong id="timestamp">{{ latest_values.timestamp[0] }}</strong>
     </div>
+    <div class="card-body">
+      <div class="row flex-nowrap" id="latest-values-container">
+        {% for key, (value, unit) in latest_values.items() %}
+          {% if key != 'timestamp' %}
+          <div class="col d-flex justify-content-between" id="value-{{ key }}">
+            <strong>{{ key }}:</strong>
+            <span>{{ value }} {{ unit }}</span>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 
-    <div id="plot1"> </div>
-    <div id="plot2"> </div>
-    <div id="plot3"> </div>
-    <div id="plot4"> </div>
+  <div id="plot1"></div>
+  <div id="plot2"></div>
+  <div id="plot3"></div>
+  <div id="plot4"></div>
 </body>
 
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+  const modeBarButtonsToRemove = ['toImage'];
+  const EDGE_TOLERANCE_MS = 5 * 60 * 1000; // 5 minutes
 
-    var modeBarButtonsToRemove = ['toImage'];
+  document.addEventListener('DOMContentLoaded', function () {
+    const plots = [
+      { id: 'plot1', config: '{{ plot_temp1 | tojson | safe }}' },
+      { id: 'plot2', config: '{{ plot_pressure1 | tojson | safe }}' },
+      { id: 'plot3', config: '{{ plot_pump1 | tojson | safe }}' },
+      { id: 'plot4', config: '{{ plot_hv1 | tojson | safe }}' },
+    ];
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var plots = [
-            { id: 'plot1', config: '{{ plot_temp1| tojson |safe }}' },
-            { id: 'plot2', config: '{{ plot_pressure1| tojson |safe }}' },
-            { id: 'plot3', config: '{{ plot_pump1| tojson |safe }}' },
-            { id: 'plot4', config: '{{ plot_hv1| tojson |safe }}' },
-        ];
+    let syncing = false;
 
-        var updating = false;  // flag to check if an update operation is in progress
-        plots.forEach(function (plot) {
-            // Create a new plot
-            var gd = document.getElementById(plot.id);
-            var config = JSON.parse(plot.config);
+    // Build plots with custom save button and manual-zoom preservation
+    plots.forEach(function (plot) {
+      const gd = document.getElementById(plot.id);
+      const cfg = JSON.parse(plot.config);
+      cfg.layout = cfg.layout || {};
+      cfg.layout.uirevision = cfg.layout.uirevision || 'manual-zoom';
+      cfg.layout.xaxis = cfg.layout.xaxis || { type: 'date', title: 'Time' };
 
-            // Add a custom button to the modebar
-            var customSaveButton = {
-                // Add the title and icon for the custom button
-                name: 'Download plot',
-                icon: Plotly.Icons.camera,
-                direction: 'up',
-                click: function (gd) {
-                    var format = 'png';
-                    var currentDate = new Date();
-                    var datetime = currentDate.toISOString().replace(/:/g, '-').replace(/\./g, '-');
-                    var vname = '';
-                    if (plot.id == 'plot1') {
-                        vname = 'temperature_';
-                    } else if (plot.id == 'plot2') {
-                        vname = 'pressure_';
-                    } else if (plot.id == 'plot3') {
-                        vname = 'pump_';
-                    } else if (plot.id == 'plot4') {
-                        vname = 'hv_';
-                    }
-                    var filename = vname + datetime;
+      const customSaveButton = {
+        name: 'Download plot',
+        icon: Plotly.Icons.camera,
+        click: function (gdDiv) {
+          const currentDate = new Date();
+          const datetime = currentDate.toISOString().replace(/:/g, '-').replace(/\./g, '-');
+          const map = { plot1: 'temperature_', plot2: 'pressure_', plot3: 'pump_', plot4: 'hv_' };
+          Plotly.downloadImage(gdDiv, { format: 'png', filename: (map[plot.id] || 'plot_') + datetime, height: 500, width: 700, scale: 1 });
+        }
+      };
 
-                    Plotly.downloadImage(gd, {
-                        format: format,
-                        filename: filename,
-                        height: 500,
-                        width: 700,
-                        scale: 1
-                    });
-                }
-            };
-            // Add the new button to the modebar buttons array, as well as the buttons to remove
-            Plotly.newPlot(gd, config.data, config.layout, {
-                modeBarButtonsToAdd: [customSaveButton],
-                modeBarButtonsToRemove: modeBarButtonsToRemove
-            })
-                .then(function (gd) {
-                    // Once the plot is initialized, register a plotly_relayout event handler
-                    gd.on('plotly_relayout', function (eventData) {
-                        if (updating) return;  // if an update is already in progress, skip
-                        // You can now handle the zoom (or other relayout) event here
-                        if (eventData['xaxis.range[0]'] && eventData['xaxis.range[1]']) {
-                            var newRange = [eventData['xaxis.range[0]'], eventData['xaxis.range[1]']];
-                            updating = true;  // set flag indicating update is in progress
-                            plots.forEach(function (innerPlot) {
-                                if (innerPlot.id !== plot.id) {
-                                    var actualPlotDiv = document.getElementById(innerPlot.id);
-                                    Plotly.relayout(actualPlotDiv, { 'xaxis.range': newRange });
-                                }
-                            });
-                            updating = false;  // reset the flag once done
-                        }
-                    });
-                    // Double-click handler
-                    gd.on('plotly_doubleclick', function () {
-                        plots.forEach(function (innerPlot) {
-                            var innerPlotDiv = document.getElementById(innerPlot.id);
-                            Plotly.relayout(innerPlotDiv, {
-                                'xaxis.autorange': true,
-                                'yaxis.autorange': true
-                            });
-                        });
-                    });
-                });
+      Plotly.newPlot(gd, cfg.data, cfg.layout, {
+        modeBarButtonsToAdd: [customSaveButton],
+        modeBarButtonsToRemove
+      }).then(function () {
+        // Sync x-range across all plots on manual zoom/pan
+        gd.on('plotly_relayout', function (ev) {
+          if (syncing) return;
+          const r0 = ev['xaxis.range[0]'];
+          const r1 = ev['xaxis.range[1]'];
+          if (!r0 || !r1) return;
+
+          syncing = true;
+          plots.forEach(function (inner) {
+            if (inner.id === plot.id) return;
+            const target = document.getElementById(inner.id);
+            Plotly.relayout(target, { 'xaxis.range': [r0, r1] });
+          });
+          syncing = false;
         });
+
+        // Double-click resets all plots to autorange
+        gd.on('plotly_doubleclick', function () {
+          plots.forEach(function (inner) {
+            const target = document.getElementById(inner.id);
+            Plotly.relayout(target, { 'xaxis.autorange': true, 'yaxis.autorange': true });
+          });
+        });
+      });
     });
 
-</script>
+    // -------- Helper: find latest timestamp in plot data --------
+    function getLatestTimestamp(gd) {
+      let maxTs = null;
+      if (gd && gd.data) {
+        gd.data.forEach(trace => {
+          const x = trace.x || [];
+          if (x.length) {
+            const last = new Date(x[x.length - 1]).getTime();
+            if (!isNaN(last) && (maxTs === null || last > maxTs)) {
+              maxTs = last;
+            }
+          }
+        });
+      }
+      return maxTs;
+    }
 
+    // -------- Periodic updates (preserve manual zoom OR extend if at edge) --------
+    function updatePlots() {
+      fetch("{{ url_for('slow_control.get_plot_data') }}")
+        .then(r => r.json())
+        .then(data => {
+          // Update traces
+          updatePlotTraces('plot1', data.plot_temp1.data);
+          updatePlotTraces('plot2', data.plot_pressure1.data);
+          updatePlotTraces('plot3', data.plot_pump1.data);
+          updatePlotTraces('plot4', data.plot_hv1.data);
+
+          // Check each plot: if user's right edge is near the latest point, extend range
+          ['plot1', 'plot2', 'plot3', 'plot4'].forEach(id => {
+            const gd = document.getElementById(id);
+            const xr = gd?.layout?.xaxis?.range;
+            if (!xr || !xr[1]) return;
+
+            const currentRight = new Date(xr[1]).getTime();
+            const latestData = getLatestTimestamp(gd);
+            
+            if (latestData && Math.abs(latestData - currentRight) < EDGE_TOLERANCE_MS) {
+              // User is at the edge → shift range to include new data
+              const width = new Date(xr[1]).getTime() - new Date(xr[0]).getTime();
+              const newRight = new Date(latestData);
+              const newLeft = new Date(latestData - width);
+              Plotly.relayout(id, { 'xaxis.range': [newLeft, newRight] });
+            }
+          });
+
+          updateLatestValues(data.latest_values);
+        })
+        .catch(err => console.error('Error updating plots:', err));
+    }
+
+    function updatePlotTraces(plotId, newData) {
+      const gd = document.getElementById(plotId);
+      const existing = (gd && gd.data) ? gd.data.length : 0;
+
+      if (existing === newData.length) {
+        // Fast path: same number of traces → restyle preserves zoom
+        newData.forEach((tr, i) => {
+          Plotly.restyle(plotId, { x: [tr.x], y: [tr.y], name: [tr.name] }, [i]);
+        });
+      } else {
+        // Fallback: replace plot, but restore current x-range to preserve user view
+        const currentRange = gd?.layout?.xaxis?.range ? gd.layout.xaxis.range.slice() : null;
+        const layout = Object.assign({}, gd.layout || {}, { uirevision: 'manual-zoom' });
+        Plotly.react(gd, newData, layout).then(() => {
+          if (currentRange) Plotly.relayout(gd, { 'xaxis.range': currentRange });
+        });
+      }
+    }
+
+    function updateLatestValues(values) {
+      if (!values) return;
+      if (values.timestamp && values.timestamp[0]) {
+        const t = document.getElementById('timestamp');
+        if (t) t.textContent = values.timestamp[0];
+      }
+      Object.keys(values).forEach(key => {
+        if (key === 'timestamp') return;
+        const el = document.getElementById('value-' + key);
+        if (!el) return;
+        const v = values[key] && values[key][0] != null ? values[key][0] : '';
+        const u = values[key] && values[key][1] != null ? values[key][1] : '';
+        const span = el.querySelector('span');
+        if (span) span.textContent = (v !== '' ? v : '') + (u ? (' ' + u) : '');
+      });
+    }
+
+    // Update every 60s
+    setInterval(updatePlots, 60000);
+  });
+</script>
 
 </html>
 
