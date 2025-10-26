@@ -3,12 +3,22 @@ from flask_login import login_required
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta, timezone
 from app import mongo
+from zoneinfo import ZoneInfo
+import os
 
 slow_control = Blueprint('slow_control', __name__)
 
+# Pick the timezone your data was written in (set via env APP_TZ on the server)
+APP_TZ = ZoneInfo(os.getenv("APP_TZ", "Europe/Amsterdam"))
+
+def _now_local_naive():
+    # Compute “now” in your desired TZ, then drop tzinfo to match naive Mongo datetimes
+    return datetime.now(APP_TZ).replace(tzinfo=None)
+
 def make_plot(sensors, plot_title, yaxis_title, hours=72):
     # Build simple Plotly payload from the last N hours of data
-    end = datetime.now()#timezone.utc) #+ timedelta(hours=1)
+    # end = datetime.now()#timezone.utc) #+ timedelta(hours=1)
+    end = _now_local_naive()
     start = end - timedelta(hours=hours)
 
     projection = {'timestamp': 1}
