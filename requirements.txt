@@ -1,18 +1,15 @@
 # Core Flask
-Flask>=2.3.0
+Flask>=3.0.0
 Flask-Login>=0.6.0
-Flask-PyMongo>=2.3.0
-Flask-WTF>=1.1.0
-Flask-Bcrypt>=1.0.0
-Flask-Cors>=4.0.0
+Flask-PyMongo>=3.0.0
+Flask-WTF>=1.2.0
 
 # Database
 pymongo>=4.0.0
 dnspython>=2.0.0
 
 # Security
-Werkzeug>=2.3.0
-bcrypt>=4.0.0
+Werkzeug>=3.0.0
 
 # Utilities
 pytz>=2023.0

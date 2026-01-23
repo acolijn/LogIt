@@ -3,10 +3,26 @@ secrets/
 build/
 __pychache__/
 migrate.py
-setup.py
 logit_db_20240123.tar
 logit_db_20240910.tar
 logit_db_2025*.tar
+
+# MongoDB local data (symlinks and directories)
+mongodb_data
+mongodb_data/
+mongodb_bin
+mongodb_bin/
+mongodb
+mongodb/
+dump_atlas
+dump_atlas/
+
+# Virtual environment (symlinks and directories)
+logit
+logit/
+venv
+venv/
+
 docs/source/__pycache__/
 app/routes/__pycache__/slow_control.cpython-311.pyc
 app/routes/__pycache__/main.cpython-311.pyc

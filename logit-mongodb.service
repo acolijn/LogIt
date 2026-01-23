@@ -1,0 +1,31 @@
+# MongoDB service for LogIt
+# 
+# Installation:
+#   1. Copy to /etc/systemd/system/logit-mongodb.service
+#   2. Update paths below to match your deployment
+#   3. sudo systemctl daemon-reload
+#   4. sudo systemctl enable logit-mongodb
+#   5. sudo systemctl start logit-mongodb
+
+[Unit]
+Description=MongoDB for LogIt
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+
+# UPDATE THESE PATHS for your deployment
+WorkingDirectory=/root/LogIt
+ExecStart=/usr/bin/mongod --config /root/LogIt/mongod.conf
+
+Restart=always
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
