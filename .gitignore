@@ -1,7 +1,8 @@
+
 app/static/upload/
 secrets/
 build/
-__pychache__/
+__pycache__/
 migrate.py
 logit_db_20240123.tar
 logit_db_20240910.tar
@@ -15,25 +16,33 @@ mongodb_bin/
 mongodb
 mongodb/
 dump_atlas
+
+# Ignore uploads and secrets
+app/static/upload/
+secrets/
+
+# Ignore build artifacts and database dumps
+build/
+logit_db_20240123.tar
+logit_db_20240910.tar
+logit_db_2025*.tar
+
+# Ignore MongoDB local data and binaries
+mongodb_data/
+mongodb_bin/
+mongodb/
 dump_atlas/
 
-# Virtual environment (symlinks and directories)
-logit
+# Ignore virtual environments
 logit/
-venv
 venv/
 
+# Ignore all __pycache__ folders and pyc files
+__pycache__/
+*.pyc
+
+# Ignore template and route cache
+app/templates/__pycache__/
+app/routes/__pycache__/
 docs/source/__pycache__/
-app/routes/__pycache__/slow_control.cpython-311.pyc
-app/routes/__pycache__/main.cpython-311.pyc
-app/routes/__pycache__/calibration.cpython-311.pyc
-app/routes/__pycache__/data_acquisition.cpython-311.pyc
-app/routes/__pycache__/*
-app/routes/slow_control.pyc
-app/routes/main.pyc
-app/routes/slow_control_old.py
-app/templates/__pycache__/*
-app/templates/slow_control_plot_old.html
-app/routes/__pycache__/slow_control.cpython-311.pyc
-app/routes/__pycache__/slow_control.cpython-311.pyc
-app/routes/__pycache__/slow_control.cpython-311.pyc
+app/models/__pycache__/

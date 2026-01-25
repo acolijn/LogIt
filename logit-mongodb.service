@@ -13,12 +13,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
-Group=www-data
+User=ubuntu
+Group=ubuntu
 
-# UPDATE THESE PATHS for your deployment
-WorkingDirectory=/root/LogIt
-ExecStart=/usr/bin/mongod --config /root/LogIt/mongod.conf
+# Paths for ubuntu user deployment
+WorkingDirectory=/home/ubuntu/LogIt
+ExecStart=/home/ubuntu/mongodb_bin/bin/mongod --config /home/ubuntu/LogIt/mongod.conf
 
 Restart=always
 RestartSec=5

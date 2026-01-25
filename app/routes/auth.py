@@ -6,7 +6,7 @@ from flask_login import login_user,login_required, logout_user, current_user
 from app import mongo, login_manager
 from app.models.User import User
 from app.models.Registration import RegistrationForm
-from app.models.LogBookForm import LogbookForm, AddUsersToLogbookForm
+from app.models.LogBookForm import LogbookForm, AddUsersToLogbookForm, RemoveUsersFromLogbookForm, DeleteUserForm
 from bson.objectid import ObjectId
 from app.routes.main import UPLOAD_FOLDER
 
@@ -86,6 +86,7 @@ def admin_page():
 
     logbook_form = LogbookForm()
     user_form = AddUsersToLogbookForm()
+    delete_user_form = DeleteUserForm()
     registration_form = RegistrationForm()
 
     # Dynamically set choices for the logbook dropdown
@@ -100,6 +101,10 @@ def admin_page():
     user_form.logbook_select.choices = [(str(logbook['_id']), logbook['name']) for logbook in logbooks]
     user_form.user_select.choices = [(str(user['_id']), user['username']) for user in users]
     # user_form.logbook_select.choices = [(str(logbook['_id']), logbook['name']) for logbook in logbooks]
+    
+    # Set choices for delete user form - exclude admin users
+    all_users = mongo.db.users.find({"is_admin": {"$ne": True}})
+    delete_user_form.user_select.choices = [('', 'Select User')] + [(str(user['_id']), user['username']) for user in all_users]
 
     # Handle logbook creation
     if 'create_logbook' in request.form:
@@ -149,7 +154,34 @@ def admin_page():
                 for error in errors:
                     flash(f"Error in the {getattr(registration_form, field).label.text} field - {error}", 'danger')
 
-    return render_template('admin.html', logbook_form=logbook_form, user_form=user_form, registration_form=registration_form)
+    # Handle deleting user completely
+    if 'delete_user' in request.form:
+        if delete_user_form.validate_on_submit():
+            user_id = ObjectId(delete_user_form.user_select.data)
+            user = mongo.db.users.find_one({"_id": user_id})
+            
+            if user:
+                # Prevent deletion of admin users
+                if user.get('is_admin', False):
+                    flash('Cannot delete admin users!', 'danger')
+                    return redirect(url_for('auth.admin_page'))
+                
+                # Remove user from all logbooks
+                mongo.db.logbooks.update_many(
+                    {"users": user_id},
+                    {"$pull": {"users": user_id}}
+                )
+                
+                # Delete the user
+                mongo.db.users.delete_one({"_id": user_id})
+                
+                flash(f"User '{user['username']}' deleted successfully from all logbooks!", 'success')
+                return redirect(url_for('auth.admin_page'))
+            else:
+                flash('User not found!', 'danger')
+
+    return render_template('admin.html', logbook_form=logbook_form, user_form=user_form, 
+                         delete_user_form=delete_user_form, registration_form=registration_form)
 
 from flask import jsonify
 @auth.route('/get-available-users/<logbook_id>')
@@ -163,5 +195,22 @@ def get_available_users(logbook_id):
     
     # Convert users to list of dicts to send as JSON
     user_list = [{'id': str(user['_id']), 'name': user['username']} for user in available_users]
+
+    return jsonify(users=user_list)
+
+@auth.route('/get-logbook-users/<logbook_id>')
+def get_logbook_users(logbook_id):
+    # Get the current users in the logbook
+    logbook = mongo.db.logbooks.find_one({"_id": ObjectId(logbook_id)})
+    if not logbook:
+        return jsonify(users=[])
+    
+    current_user_ids = logbook.get('users', [])
+    
+    # Fetch users in the logbook
+    logbook_users = mongo.db.users.find({'_id': {'$in': current_user_ids}})
+    
+    # Convert users to list of dicts to send as JSON
+    user_list = [{'id': str(user['_id']), 'name': user['username']} for user in logbook_users]
 
     return jsonify(users=user_list)

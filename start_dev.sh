@@ -1,3 +1,11 @@
+# Automatically activate virtual environment if it exists
+if [ -d "../venv" ]; then
+     source ../venv/bin/activate
+     echo "Activated virtual environment."
+else
+     echo "No virtual environment found at ../venv. Skipping activation."
+fi
+
 #!/bin/bash
 # Development startup script for LogIt
 # Starts MongoDB and Flask, stops both on Ctrl+C
@@ -28,35 +36,17 @@ cleanup() {
 
 trap cleanup SIGINT SIGTERM
 
-# Create data directory if needed
-mkdir -p mongodb_data
-
-# Start MongoDB (use local binary if available)
-echo "Starting MongoDB..."
-if [ -x "./mongodb/bin/mongod" ]; then
-    ./mongodb/bin/mongod --config mongod.conf &
-elif [ -x "./mongodb_bin/mongod" ]; then
-    ./mongodb_bin/mongod --config mongod.conf &
-else
-    mongod --config mongod.conf &
-fi
-MONGO_PID=$!
-
-# Wait for MongoDB to be ready
-echo "Waiting for MongoDB to start..."
-sleep 2
 
 # Check if MongoDB is running
-if ! kill -0 $MONGO_PID 2>/dev/null; then
-    echo "ERROR: MongoDB failed to start. Check mongodb_data/mongod.log"
+if ! lsof -Pi :27017 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
+    echo "ERROR: MongoDB is not running on port 27017. Please start the MongoDB service (logit-mongodb) first."
     exit 1
 fi
-
-echo "MongoDB started (PID: $MONGO_PID)"
+echo "MongoDB is running."
 
 # Start Flask
 echo "Starting Flask..."
-python run.py &
+python3 run.py &
 FLASK_PID=$!
 
 echo ""

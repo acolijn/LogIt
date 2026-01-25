@@ -13,3 +13,12 @@ class AddUsersToLogbookForm(FlaskForm):
     #username = StringField('Username', validators=[DataRequired()])
     user_select = SelectField('Select User', coerce=str)  # <-- This line
     submit = SubmitField('Add User to Logbook', id='add_user_to_logbook')
+
+class RemoveUsersFromLogbookForm(FlaskForm):
+    logbook_select = SelectField('Select Logbook', choices=[], validators=[DataRequired()])
+    user_select = SelectField('Select User', coerce=str)
+    submit = SubmitField('Remove User from Logbook', id='remove_user_from_logbook')
+
+class DeleteUserForm(FlaskForm):
+    user_select = SelectField('Select User', coerce=str, validators=[DataRequired()])
+    submit = SubmitField('Delete User', id='delete_user')
