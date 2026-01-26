@@ -22,8 +22,11 @@ def create_app(config_filename):
     from .routes.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     
-    from .routes.auth import auth as auth_blueprint
+    from .routes.auth import auth as auth_blueprint, init_oauth
     app.register_blueprint(auth_blueprint)
+    
+    # Initialize OAuth for SSO
+    init_oauth(app)
 
     from .routes.slow_control import slow_control as slow_control_blueprint
     app.register_blueprint(slow_control_blueprint)

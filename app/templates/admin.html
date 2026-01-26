@@ -87,7 +87,7 @@
     <!-- Second row for Delete User -->
     <div class="row">
         <!-- Delete User Completely Form -->
-        <div class="col-md-4 offset-md-4">
+        <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">Delete User</div>
                 <div class="card-body">
@@ -103,6 +103,37 @@
                         </div>
                     </form>
                     <small class="text-muted">Note: Admin users cannot be deleted.</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Manage User Logbook Permissions Form -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">Manage User Logbook Permissions</div>
+                <div class="card-body">
+                    <form method="post">
+                        {{ manage_logbooks_form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ manage_logbooks_form.user_select.label(class="form-label") }}
+                                    {{ manage_logbooks_form.user_select(id="manage_user_select", class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ manage_logbooks_form.logbook_access.label(class="form-label") }}
+                                    {{ manage_logbooks_form.logbook_access(id="manage_logbook_access", class="form-control", size=5) }}
+                                    <small class="text-muted">Hold Ctrl/Cmd to select multiple logbooks. This controls logbook-level access for SSO users (and can be used for local users too).</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <input type="submit" name="manage_user_logbooks" value="Update User Permissions" class="btn btn-primary">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -147,6 +178,38 @@
                         });
                     });
             });
+            
+            // Handle user selection in manage permissions form
+            const manageUserSelect = document.getElementById('manage_user_select');
+            const manageLogbookAccess = document.getElementById('manage_logbook_access');
+            
+            if (manageUserSelect && manageLogbookAccess) {
+                manageUserSelect.addEventListener('change', function () {
+                    const userId = this.value;
+                    
+                    if (!userId) {
+                        // Clear selections if no user selected
+                        Array.from(manageLogbookAccess.options).forEach(option => option.selected = false);
+                        return;
+                    }
+
+                    fetch(`/get-user-logbooks/${userId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Clear current selections
+                            Array.from(manageLogbookAccess.options).forEach(option => option.selected = false);
+                            
+                            // Select the logbooks the user has access to
+                            data.logbooks.forEach(logbookName => {
+                                Array.from(manageLogbookAccess.options).forEach(option => {
+                                    if (option.value === logbookName) {
+                                        option.selected = true;
+                                    }
+                                });
+                            });
+                        });
+                });
+            }
         });
 </script>
 

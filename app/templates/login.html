@@ -7,25 +7,57 @@
         <div class="row mb-3">
             <div class="col-md-4 offset-md-4">
                 <h2 class="text-center">Login</h2>
-                <form action="{{ url_for('auth.login') }}" method="post">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                
+                {% if oidc_enabled %}
+                <!-- SSO Login Section -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nikhef SSO Login</h5>
+                        <p class="card-text">Login with your Nikhef account</p>
+                        <div class="mb-3">
+                            <label for="sso_logbook" class="form-label">Select Logbook</label>
+                            <select class="form-control" id="sso_logbook" required>
+                                {% for logbook in logbooks %}
+                                <option value="{{ logbook._id }}">{{ logbook.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="sso_login_btn">
+                            <i class="bi bi-shield-lock"></i> Login with Nikhef SSO
+                        </button>
                     </div>
-                    <div class="mb-3">
-                        <label for="logbook" class="form-label">Select Logbook</label>
-                        <select class="form-control" id="logbook" name="logbook" required>
-                            {% for logbook in logbooks %}
-                            <option value="{{ logbook._id }}">{{ logbook.name }}</option>
-                            {% endfor %}
-                        </select>
+                </div>
+                
+                <div class="text-center mb-3">
+                    <small class="text-muted">OR</small>
+                </div>
+                {% endif %}
+                
+                <!-- Local Login Form -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Local Login</h5>
+                        <form action="{{ url_for('auth.login') }}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="logbook" class="form-label">Select Logbook</label>
+                                <select class="form-control" id="logbook" name="logbook" required>
+                                    {% for logbook in logbooks %}
+                                    <option value="{{ logbook._id }}">{{ logbook.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-secondary btn-block">Login</button>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -42,6 +74,16 @@
         <!-- End of Flash Messages -->
     </div>
 
+    {% if oidc_enabled %}
+    <script>
+        document.getElementById('sso_login_btn').addEventListener('click', function() {
+            const logbook = document.getElementById('sso_logbook').value;
+            window.location.href = "{{ url_for('auth.login_sso') }}?logbook=" + logbook;
+        });
+    </script>
+    {% endif %}
+
 {% endblock %}
+
 
 

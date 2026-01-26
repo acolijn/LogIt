@@ -1,7 +1,8 @@
 import os
 import uuid
+from functools import wraps
 
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify, session
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, jsonify, session, flash
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
@@ -26,8 +27,27 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'pdf'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def require_logbook_access(f):
+    """Decorator to check if user has access to the logbook in session"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logbook_name' not in session:
+            flash('No logbook selected!', 'danger')
+            return redirect(url_for('auth.login'))
+        
+        logbook_name = session['logbook_name']
+        
+        # Check if user has access
+        if not current_user.has_logbook_access(logbook_name):
+            flash(f'You do not have access to the {logbook_name} logbook!', 'danger')
+            return redirect(url_for('auth.logout'))
+        
+        return f(*args, **kwargs)
+    return decorated_function
+
 @main.route('/add-entry', methods=['GET'])
 @login_required
+@require_logbook_access
 def add_entry_form():
     """Show the add entry form.
 
@@ -40,6 +60,7 @@ def add_entry_form():
 
 @main.route('/dbactivity.html')
 @login_required
+@require_logbook_access
 def db_activity():
     """
     Renders the 'dbactivity.html' template.
@@ -109,6 +130,7 @@ def save_image(image):
 
 @main.route('/add-entry', methods=['POST'])
 @login_required
+@require_logbook_access
 def handle_entry():
     """Handle the add entry form.
 
@@ -201,6 +223,7 @@ from math import ceil
 
 @main.route('/entries')
 @login_required
+@require_logbook_access
 def show_entries():
     """Show the logbook entries.
 
@@ -321,6 +344,7 @@ def remove_keyword():
 
 @main.route('/keywords')
 @login_required
+@require_logbook_access
 def show_keywords():
     """Show the list of allowed keywords.
 
@@ -441,6 +465,7 @@ from bson import ObjectId  # Importing ObjectId from bson
 
 @main.route('/update_entry/<string:entry_id>', methods=['POST'])
 @login_required
+@require_logbook_access
 def update_entry(entry_id):
     """
     Update the text of an existing entry in the database.

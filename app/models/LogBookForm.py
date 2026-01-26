@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectMultipleField
 from wtforms import SelectField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
 
@@ -22,3 +22,9 @@ class RemoveUsersFromLogbookForm(FlaskForm):
 class DeleteUserForm(FlaskForm):
     user_select = SelectField('Select User', coerce=str, validators=[DataRequired()])
     submit = SubmitField('Delete User', id='delete_user')
+
+class ManageUserLogbooksForm(FlaskForm):
+    user_select = SelectField('Select User', coerce=str, validators=[DataRequired()])
+    logbook_access = SelectMultipleField('Allowed Logbooks', coerce=str)
+    submit = SubmitField('Update User Permissions', id='manage_user_logbooks')
+

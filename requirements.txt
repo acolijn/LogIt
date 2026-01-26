@@ -11,6 +11,10 @@ dnspython>=2.0.0
 # Security
 Werkzeug>=3.0.0
 
+# OAuth/OIDC
+Authlib>=1.3.0
+requests>=2.31.0
+
 # Utilities
 pytz>=2023.0
 python-dateutil>=2.8.0
