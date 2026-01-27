@@ -70,7 +70,7 @@ def make_plot(sensors, plot_title, yaxis_title, hours=72):
 
 def build_plot_payload():
     # Sensor groups
-    temperature_in_cryostat = ["TT201", "TT202", "TT203", "TT204", "TT205", "TT206", "TT207", "TT401", "TT402", "TT303", "TT304"]
+    temperature_in_cryostat = ["TT201", "TT202", "TT203", "TT204", "TT205", "TT206", "TT207", "TT401", "TT402", "TT303", "TT304", "TAMB"]
     pressures = ["PT101", "PT102", "PT103", "PT104", "PT201"]
     pump = ["TT301","TT302","TT103","TT104","FM101","PP401"]
     hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS", "I_PMT_TOP", "I_PMT_BOT"]

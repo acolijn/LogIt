@@ -22,7 +22,7 @@ project_home = Path(__file__).parent.parent
 UPLOAD_FOLDER = project_home / 'static' / 'upload'
 print(f"Upload folder ....: {UPLOAD_FOLDER}")  # Debug: print the upload folder path
 # Your file upload and logbook entry handling goes here:
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'pdf'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'pdf', 'xls', 'xlsx'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

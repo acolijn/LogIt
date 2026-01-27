@@ -51,6 +51,12 @@
                                 <img src="{{ url_for('static', filename='icons/pdf_icon.png') }}" alt="PDF Document" class="img-thumbnail"
                                     width="50">
                             </a>
+                        {% elif image_filename is string and (image_filename.endswith('.xls') or image_filename.endswith('.xlsx')) %}
+                            <a href="{{ url_for('static', filename='upload/' + image_filename) }}" target="_blank" download>
+                                <!-- Display Excel icon -->
+                                <img src="{{ url_for('static', filename='icons/excel_icon.png') }}" alt="Excel Spreadsheet" class="img-thumbnail"
+                                    width="50">
+                            </a>
                         {% else %}
                             <a href="{{ url_for('static', filename='upload/' + image_filename) }}" data-fancybox="image-set">
                                 <!-- Display image thumbnail -->
