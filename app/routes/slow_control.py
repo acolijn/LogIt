@@ -78,7 +78,7 @@ def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False
         'xaxis': xaxis_config,
         'yaxis': {'title': yaxis_title},
         'height': 300,
-        'margin': {'l': 100, 'r': 175, 't': 70, 'b': 30},
+        'margin': {'l': 100, 'r': 175, 't': 40, 'b': 5},
     }
 
     return {'data': traces, 'layout': layout}
