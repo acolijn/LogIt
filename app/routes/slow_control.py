@@ -77,7 +77,7 @@ def make_plot(sensors, plot_title, yaxis_title, hours=168, add_rangeslider=False
         'uirevision': 'manual-zoom',  # preserve UI state if layout changes later
         'xaxis': xaxis_config,
         'yaxis': {'title': yaxis_title},
-        'height': 300 if add_rangeslider else 250,
+        'height': 300,
         'margin': {'l': 100, 'r': 175, 't': 70, 'b': 30},
     }
 
@@ -92,9 +92,9 @@ def build_plot_payload():
 
     # Plots
     plot_temp1 = make_plot(temperature_in_cryostat, "Temperature", "Temperature (C)", add_rangeslider=True)
-    plot_pressure1 = make_plot(pressures, "Pressure", "Pressure (bar)")
-    plot_pump1 = make_plot(pump, "Pump", "T (C) / F (g/min) / P(W)")
-    plot_hv1 = make_plot(hv, "High Voltage", "HV (V)")
+    plot_pressure1 = make_plot(pressures, "Pressure", "Pressure (bar)", add_rangeslider=True)
+    plot_pump1 = make_plot(pump, "Pump", "T (C) / F (g/min) / P(W)", add_rangeslider=True)
+    plot_hv1 = make_plot(hv, "High Voltage", "HV (V)", add_rangeslider=True)
 
     # Latest values (safe handling if no data)
     latest = mongo.db.slow_control_data.find_one(sort=[('timestamp', -1)]) or {}
