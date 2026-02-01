@@ -15,7 +15,7 @@ def _now_local_naive():
     # Compute “now” in your desired TZ, then drop tzinfo to match naive Mongo datetimes
     return datetime.now(APP_TZ).replace(tzinfo=None)
 
-def make_plot(sensors, plot_title, yaxis_title, hours=168, add_rangeslider=False):
+def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False):
     # Build simple Plotly payload from the last N hours of data
     # end = datetime.now()#timezone.utc) #+ timedelta(hours=1)
     end = _now_local_naive()
