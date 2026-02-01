@@ -1,8 +1,8 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../app/routes'))      # Point this to your code directory if needed
-sys.path.insert(0, os.path.abspath('../'))       # Points to the docs directory
-sys.path.insert(0, os.path.abspath('.'))  # Points to the source directory where your .rst files are
+# Add the project root directory to the path
+sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # Configuration file for the Sphinx documentation builder.
@@ -43,7 +43,17 @@ autodoc_default_options = {
 viewcode_import = True
 
 #autodoc_mock_imports = ['pandas', 'shutil', 'json', 'mendeleev', 'nlohmann', 'app', 'flask', 'flask_login', 'pymongo', 'werkzeug', 'werkzeug.security', 'getpass', 'plotly', 'dash', 'dash_core_components', 'dash_html_components', 'dash.dependencies']
-autodoc_mock_imports = ['pandas', 'pymongo', 'shutil', 'plotly', 'app']
+autodoc_mock_imports = [
+    'pandas', 
+    'pymongo', 
+    'shutil', 
+    'plotly', 
+    'flask_pymongo',
+    'bson',
+    'werkzeug.security',
+    'authlib',
+    'zoneinfo'
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
