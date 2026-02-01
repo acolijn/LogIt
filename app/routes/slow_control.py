@@ -15,11 +15,13 @@ def _now_local_naive():
     # Compute “now” in your desired TZ, then drop tzinfo to match naive Mongo datetimes
     return datetime.now(APP_TZ).replace(tzinfo=None)
 
-def make_plot(sensors, plot_title, yaxis_title, hours=72):
+def make_plot(sensors, plot_title, yaxis_title, hours=168, add_rangeslider=False):
     # Build simple Plotly payload from the last N hours of data
     # end = datetime.now()#timezone.utc) #+ timedelta(hours=1)
     end = _now_local_naive()
     start = end - timedelta(hours=hours)
+    # Default visible range: last 48 hours (2 days)
+    default_start = end - timedelta(hours=48)
 
     projection = {'timestamp': 1}
     for s in sensors:
@@ -57,12 +59,25 @@ def make_plot(sensors, plot_title, yaxis_title, hours=72):
         })
 
     display_end = end + timedelta(minutes=20)
+    xaxis_config = {
+        'title': '', 
+        'type': 'date', 
+        'range': [default_start.isoformat(), display_end.isoformat()]
+    }
+    
+    # Add rangeslider only for the first plot
+    if add_rangeslider:
+        xaxis_config['rangeslider'] = {
+            'visible': True, 
+            'range': [start.isoformat(), display_end.isoformat()]
+        }
+    
     layout = {
         'title': {'text': plot_title},
         'uirevision': 'manual-zoom',  # preserve UI state if layout changes later
-        'xaxis': {'title': '', 'type': 'date', 'range': [start.isoformat(), display_end.isoformat()]},
+        'xaxis': xaxis_config,
         'yaxis': {'title': yaxis_title},
-        'height': 250,
+        'height': 300 if add_rangeslider else 250,
         'margin': {'l': 100, 'r': 175, 't': 70, 'b': 30},
     }
 
@@ -76,7 +91,7 @@ def build_plot_payload():
     hv = ["HV_PMT_TOP","HV_PMT_BOT","HV_ANO", "HV_GATE", "HV_CAT", "HV_TS", "HV_BS", "I_PMT_TOP", "I_PMT_BOT"]
 
     # Plots
-    plot_temp1 = make_plot(temperature_in_cryostat, "Temperature", "Temperature (C)")
+    plot_temp1 = make_plot(temperature_in_cryostat, "Temperature", "Temperature (C)", add_rangeslider=True)
     plot_pressure1 = make_plot(pressures, "Pressure", "Pressure (bar)")
     plot_pump1 = make_plot(pump, "Pump", "T (C) / F (g/min) / P(W)")
     plot_hv1 = make_plot(hv, "High Voltage", "HV (V)")

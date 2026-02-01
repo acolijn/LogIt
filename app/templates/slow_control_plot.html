@@ -69,21 +69,34 @@
         modeBarButtonsToAdd: [customSaveButton],
         modeBarButtonsToRemove
       }).then(function () {
-        // Sync x-range across all plots on manual zoom/pan
-        gd.on('plotly_relayout', function (ev) {
-          if (syncing) return;
-          const r0 = ev['xaxis.range[0]'];
-          const r1 = ev['xaxis.range[1]'];
-          if (!r0 || !r1) return;
+        // Only plot1 (with rangeslider) syncs to others to avoid feedback loop
+        if (plot.id === 'plot1') {
+          gd.on('plotly_relayout', function (ev) {
+            if (syncing) return;
+            
+            // Check for range changes from zoom/pan or rangeslider
+            let r0 = ev['xaxis.range[0]'];
+            let r1 = ev['xaxis.range[1]'];
+            
+            // Also check for xaxis.range (array format from rangeslider)
+            if (!r0 && !r1 && ev['xaxis.range']) {
+              r0 = ev['xaxis.range'][0];
+              r1 = ev['xaxis.range'][1];
+            }
+            
+            if (!r0 || !r1) return;
 
-          syncing = true;
-          plots.forEach(function (inner) {
-            if (inner.id === plot.id) return;
-            const target = document.getElementById(inner.id);
-            Plotly.relayout(target, { 'xaxis.range': [r0, r1] });
+            syncing = true;
+            plots.forEach(function (inner) {
+              if (inner.id === 'plot1') return;
+              const target = document.getElementById(inner.id);
+              if (target) {
+                Plotly.relayout(target, { 'xaxis.range': [r0, r1] });
+              }
+            });
+            setTimeout(function() { syncing = false; }, 50);
           });
-          syncing = false;
-        });
+        }
 
         // Double-click resets all plots to autorange
         gd.on('plotly_doubleclick', function () {
