@@ -5,6 +5,9 @@ build:
   tools:
     python: "3.11"
 
+sphinx:
+  configuration: docs/source/conf.py
+
 python:
   install:
-    - requirements: docs/requirements.txt  # Remove the path: . installation to avoid circular installation
+    - requirements: docs/requirements.txt
