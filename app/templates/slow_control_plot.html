@@ -59,6 +59,7 @@
       cfg.layout = cfg.layout || {};
       cfg.layout.uirevision = cfg.layout.uirevision || 'manual-zoom';
       cfg.layout.xaxis = cfg.layout.xaxis || { type: 'date', title: 'Time' };
+      cfg.layout.dragmode = 'zoom';  // Enable box zoom (both x and y)
 
       const customSaveButton = {
         name: 'Download plot',
@@ -73,7 +74,8 @@
 
       Plotly.newPlot(gd, cfg.data, cfg.layout, {
         modeBarButtonsToAdd: [customSaveButton],
-        modeBarButtonsToRemove
+        modeBarButtonsToRemove,
+        scrollZoom: true  // Enable scroll wheel zoom
       }).then(function () {
         // Any plot can sync to all others when its rangeslider is moved
         gd.on('plotly_relayout', function (ev) {

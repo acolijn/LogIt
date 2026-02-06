@@ -62,21 +62,23 @@ def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False
     xaxis_config = {
         'title': '', 
         'type': 'date', 
-        'range': [default_start.isoformat(), display_end.isoformat()]
+        'range': [default_start.isoformat(), display_end.isoformat()],
+        'fixedrange': False  # Allow zooming
     }
     
     # Add rangeslider only for the first plot
     if add_rangeslider:
         xaxis_config['rangeslider'] = {
             'visible': True, 
-            'range': [start.isoformat(), display_end.isoformat()]
+            'range': [start.isoformat(), display_end.isoformat()],
+            'yaxis': {'rangemode': 'auto'}  # Allow y-axis to adjust
         }
     
     layout = {
         'title': {'text': plot_title},
         'uirevision': 'manual-zoom',  # preserve UI state if layout changes later
         'xaxis': xaxis_config,
-        'yaxis': {'title': yaxis_title},
+        'yaxis': {'title': yaxis_title, 'fixedrange': False},  # Allow y-axis zooming
         'height': 300,
         'margin': {'l': 100, 'r': 175, 't': 40, 'b': 5},
     }
