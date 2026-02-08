@@ -35,6 +35,8 @@ def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False
     docs = list(cursor)
 
     traces = []
+    all_valid_values = []  # Track all valid values for y-axis range calculation
+    
     for sensor in sensors:
         x, y = [], []
         for doc in docs:
@@ -42,20 +44,33 @@ def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False
             val = doc.get(sensor)
             if ts is None or val is None:
                 continue
+                
             # Ensure UTC-aware and serialize as RFC3339 Z (avoids browser TZ shifts)
             if getattr(ts, 'tzinfo', None) is None:
                 ts = ts.replace(tzinfo=timezone.utc)
             x.append(ts.isoformat().replace('+00:00', 'Z'))
+            
+            # Filter out disconnected temperature sensors (TT### > 500C)
+            # Add null to create gaps in the plot instead of connecting lines
+            if sensor.startswith('TT') and val > 500:
+                y.append(None)
+                continue
+            
             if sensor == 'PP401':
                 val = (val*45.4/100.)**2/31.2  # convert power to W
             y.append(val)
+            
+            # Collect valid values < 1000 for range calculation
+            if val < 1000:
+                all_valid_values.append(val)
             
         traces.append({
             'type': 'scatter',
             'mode': 'lines',
             'name': sensor,
             'x': x,
-            'y': y
+            'y': y,
+            'connectgaps': False  # Don't connect lines across null values
         })
 
     display_end = end + timedelta(minutes=20)
@@ -74,11 +89,20 @@ def make_plot(sensors, plot_title, yaxis_title, hours=672, add_rangeslider=False
             'yaxis': {'rangemode': 'auto'}  # Allow y-axis to adjust
         }
     
+    # Calculate y-axis range from valid values (< 1000)
+    yaxis_config = {'title': yaxis_title, 'fixedrange': False}
+    if all_valid_values:
+        y_min = min(all_valid_values)
+        y_max = max(all_valid_values)
+        # Add 5% padding to the range
+        padding = (y_max - y_min) * 0.05 if y_max != y_min else 1
+        yaxis_config['range'] = [y_min - padding, y_max + padding]
+    
     layout = {
         'title': {'text': plot_title},
         'uirevision': 'manual-zoom',  # preserve UI state if layout changes later
         'xaxis': xaxis_config,
-        'yaxis': {'title': yaxis_title, 'fixedrange': False},  # Allow y-axis zooming
+        'yaxis': yaxis_config,
         'height': 300,
         'margin': {'l': 100, 'r': 175, 't': 40, 'b': 5},
     }
